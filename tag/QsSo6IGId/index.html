@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>关于 | Marun&#39;s Blog</title>
+<title>PHP | Marun&#39;s Blog</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -12,33 +12,13 @@
 <link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
 
 
-  
-    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
-  
-
-  
-
 
 <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
 
 
-    <meta name="description" content="
-欢迎来到我的小站呀，很高兴遇见你！🤝
-
-🏠 关于本站
-记录一些信息
-
-👨‍💻 博主是谁
-PHP Developer
-
-⛹ 兴趣爱好
-code LOL
-📬 联系我呀
-marunrun@163.com
-..." />
-    <meta name="keywords" content="" />
+    <meta name="description" content="day day up">
   </head>
   <body>
     <div id="app" class="main">
@@ -116,38 +96,28 @@ marunrun@163.com
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <div class="post-detail">
-            <h2 class="post-title">关于</h2>
-            <div class="post-date">2019-01-25</div>
-            
-            <div class="post-content" v-pre>
-              <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<pre><code>记录一些信息
-</code></pre>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<pre><code>PHP Developer
-</code></pre>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>code LOL</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>marunrun@163.com</p>
-
-            </div>
-            
-            
-
-            
+          <h2 class="current-tag">标签: PHP</h2>
+          
+            <article class="post-item">
+              <div class="left">
+                <a href="https://marunrun.github.io/post/hyperf-grafana/">
+                  <h2 class="post-title"> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控</h2>
+                </a>
+                <div class="post-date">
+                  2020-02-06
+                </div>
+                <div class="post-abstract">
+                  
+                </div>
+              </div>
               
-                <div id="gitalk-container" data-aos="fade-in"></div>
-              
+            </article>
+          
 
-              
-            
-
-          </div>
+          <div class="pagination-container">
+  
+  
+</div>
 
         </div>
       </div>
@@ -168,29 +138,6 @@ var app = new Vue({
 </script>
 
 
-
-
-
-  
-    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-    <script>
-
-      var gitalk = new Gitalk({
-        clientID: '26fc5fd105a751889dba',
-        clientSecret: 'cd035906e5b7ec76b4d985da49b74c739ba3780b',
-        repo: 'marunrun.github.io',
-        owner: 'marunrun',
-        admin: ['marunrun'],
-        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-        distractionFreeMode: false  // Facebook-like distraction free mode
-      })
-
-      gitalk.render('gitalk-container')
-
-    </script>
-  
-
-  
 
 
 
