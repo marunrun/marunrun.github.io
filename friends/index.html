@@ -1,19 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://marunrun.github.io/media/css/live2d.css">
+    <link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+    <meta name="description" content="day day up" />
+    <title>Marun's Blog</title>
+</head>
 <style>
-    a {
-        text-decoration: none;
+    @media screen and (max-width: 1300px) {
+        .archives-content ul li>span {
+            display: none;
+        }
+
+        .archives-content ul {
+            padding: 0px;
+        }
     }
 </style>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-<link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://marunrun.github.io/media/css/live2d.css">
-<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
-<title>标签-Marun's Blog</title>
-
 
 <body>
     <!-- 响应式布局，针对PC端内容显示 -->
@@ -261,145 +271,88 @@
             alert("博主暂未设置QQ联系方式");
     }
 </script></div>
-                <div id="main" class="col-xs-12 col-sm-7">
-                    <style>
-    @keyframes fade-in {
-        0% {
-            opacity: 0;
+                <div id="main" class="col-xs-12 col-sm-7" style="z-index: 999;">
+                    
+                       <div style="margin-top:80px"></div>
+                    
+                    <body>
+    <div id="friendscontainermobile">
+        
+        
+        
+    </div>
+
+    <div id="friendscontainer">
+        
+        
+        
+    </div>
+</body>
+                    <div name="comment" style="background: white">
+                        <div class="commentcontainer">
+                            
+                            <head>
+    <script src='https://marunrun.github.io/media/js/valine.min.js'></script>
+    <script src="https://marunrun.github.io/media/js/jquery.min.js"></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+</head>
+<style>
+    @media screen and (min-width: 1300px) {
+        .v .vbtn .vsubmit {
+            border-radius: 0;
+            padding: 0;
+            color: #fff;
+            line-height: 44px;
+            width: 100%;
+            border: none;
+            background: #595485;
         }
 
-        /*��ʼ״̬ ͸����Ϊ0*/
-        40% {
-            opacity: 0;
+        .v .vwrap .vedit .vctrl span.vpreview-btn,
+        .v .vwrap .vcontrol .col.col-20,
+        .v .vlist .vcard .vhead .vsys {
+            display: none;
         }
 
-        /*����״̬ ͸����Ϊ0*/
-        100% {
-            opacity: 1;
+        .v .vwrap .vmark .valert {
+            padding-top: 0px;
         }
 
-        /*����״̬ ͸����Ϊ1*/
-    }
-
-    @-webkit-keyframes fade-in {
-
-        /*���webkit�ں�*/
-        0% {
-            opacity: 0;
-        }
-
-        40% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    .postimage {
-        width: 100%;
-    }
-
-    .tag-container {
-        min-height: 100vh;
-        animation: fade-in;
-        /*��������*/
-        animation-duration: 1s;
-        /*��������ʱ��*/
-        -webkit-animation: fade-in 1s;
-        /*���webkit�ں�*/
-    }
-
-    @media screen and (max-width:1300px) {
-        .tag-container {
-            margin-top: 100px;
-            animation: fade-in;
-            /*��������*/
-            animation-duration: 1s;
-            /*��������ʱ��*/
-            -webkit-animation: fade-in 1s;
-            /*���webkit�ں�*/
+        .vtext {
+            padding: 0;
         }
     }
 </style>
-<link rel="stylesheet" href="https://marunrun.github.io/media/css/font-awesome.css">
-<div class="tag-container">
-    
-    <div class="postshow">
-        
-        <div id="post" style="width:100%">
-            
-            <img src="http://pic.netbian.com/uploads/allimg/170610/174855-1497088135bff2.jpg" class="postimage"
-                onclick="window.location.href= 'https://marunrun.github.io/post/hyperf-grafana/';return false">
-            
-        <div class="posttitlebox">
-            <div class="posttitle" onclick="window.location.href= 'https://marunrun.github.io/post/hyperf-grafana/';return false">
-             在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
-        </div>
+
+<body>
+    <div id="vcomments">
     </div>
-</div>
-<div class="postinfo">
-    <div class="postdate"><i class="fa fa-calendar"></i>2020-02-06</div>
-    <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
-    <div class="posttag">
-        
-        <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="postlink">
-            <i class="fa fa-tag"></i> PHP
-        </a>
-        
-    </div>
-</div>
-
-</div>
-
-</div>
-                    <div>
-                        <div class="pagi">
-    <ul>
-        
-        <li><a style="width:100px">&nbsp;</a></li>
-        
-                <li><a id="page1">1</a></li>
-                <li><a id="page2" class="active">2</a></li>
-                <li><a id="page3">3</a></li>
-                
-        <li><a style="width:100px">&nbsp;</a></li>
-        
-            </ul>
-</div>
-
-<div id="pagination-prev" style="display:none"> 
-</div>
-<div id="pagination-next" style="display:none"> </div>
+    <script>
+        new Valine({
+            el: '#vcomments',
+            appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+            appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+            notify: true,
+            verify: false,
+            avatar: 'retro',
+            pageSize: 10,
+            placeholder: '既然来了，何不畅所欲言呢？',
+            visitor: true // 阅读量统计
+        })
+    </script>
+</body>
 
 
-<script>
-    var prevstr = document.getElementById("pagination-prev").innerHTML;
-    var nextstr = document.getElementById("pagination-next").innerHTML;
-    var page1 = document.getElementById("page1");
-    var page2 = document.getElementById("page2");
-    var page3 = document.getElementById("page3");
-    page1.innerHTML = '-';
-    page2.innerHTML = '1';
-    page3.innerHTML = '-';
-    if (prevstr.length > 5) {
-        if (prevstr.indexOf("page/") != -1) {
-            var prevnum = parseInt(prevstr.split("page/")[1]);
-            page1.innerHTML = prevnum;
-            page2.innerHTML = prevnum + 1;
-        } else {
-            page1.innerHTML = 1;
-            page2.innerHTML = 2;
-        }
-    }
-    if (nextstr.indexOf("page/") != -1) {
-        var nextnum = parseInt(nextstr.split("page/")[1]);
-        page3.innerHTML = nextnum;
-        page2.innerHTML = nextnum - 1;
-    }
+<script type="text/javascript">
+    jinrishici.load(function (result) {
+        var jrsc_plac = result.data.content + "\n「" + result.data.origin.title + "」" + result.data.origin
+            .dynasty + " · " + result.data.origin.author
+        document.getElementById("veditor").setAttribute("placeholder", jrsc_plac);
+    });
 </script>
-                        <div style="padding-bottom:10%"></div>
+                            <div class="clear"></div>
+                            
+                        </div>
                     </div>
                 </div>
                 <div class="col-xs-6 col-sm-2"></div>
@@ -412,7 +365,6 @@
         <div id="bgurl" style="display:none">http://pic.netbian.com/uploads/allimg/170610/174855-1497088135bff2.jpg</div>
            
     </div>
-
 
     <!-- 响应式布局，针对手机端内容显示 -->
     <div class="nav-small">
@@ -513,102 +465,187 @@
   }
   </script> 
 </body>
-        <div style="margin-top:50px"></div>
-        <style>
-    @keyframes fade-in {
-        0% {
-            opacity: 0;
+        <div style="margin-top:60px"></div>
+        <body>
+    <div id="friendscontainermobile">
+        
+        
+        
+    </div>
+
+    <div id="friendscontainer">
+        
+        
+        
+    </div>
+</body>
+        <div style="margin-bottom:60px">&nbsp;</div>
+        <div name="comment" style="background: white">
+            <div class="commentcontainer">
+                
+                <head>
+    <script src='https://marunrun.github.io/media/js/valine.min.js'></script>
+    <script src="https://marunrun.github.io/media/js/jquery.min.js"></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+</head>
+<style>
+    @media screen and (min-width: 1300px) {
+        .v {
+            margin-top: 10%;
         }
 
-        /*��ʼ״̬ ͸����Ϊ0*/
-        40% {
-            opacity: 0;
+        .v .vwrap {
+            overflow: hidden;
         }
 
-        /*����״̬ ͸����Ϊ0*/
-        100% {
-            opacity: 1;
+        .v .vwrap {
+            padding: 0 0 44px;
         }
 
-        /*����״̬ ͸����Ϊ1*/
+        .v .veditor {
+            resize: none;
+        }
+
+        .veditor::placeholder {
+            color: #b3b3b3;
+            font-size: 18px;
+            text-align: center;
+            line-height: 3rem;
+            font-family: kaiti;
+        }
+
+        .v .vwrap .vedit {
+            padding-top: 0
+        }
+
+        .v .vwrap .vheader {
+            width: 80%;
+            bottom: 0;
+            position: absolute;
+            background: #f7f7f7;
+        }
+
+        .v .vinput {
+            padding: 10px 15px;
+        }
+
+        .v .vwrap .vheader .vinput {
+            border-bottom: 0px
+        }
+
+        .v .vwrap .vedit .vctrl {
+            margin-top: -44px;
+            right: 0;
+            position: absolute;
+            margin-right: -3px;
+        }
+
+        .v .vwrap .vcontrol {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 20%;
+            padding-top: 0px;
+        }
     }
 
-    @-webkit-keyframes fade-in {
-
-        /*���webkit�ں�*/
-        0% {
-            opacity: 0;
-        }
-
-        40% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
-    .postimage {
+    .v .vwrap .vcontrol .col.col-80 {
         width: 100%;
     }
 
-    .tag-container {
-        min-height: 100vh;
-        animation: fade-in;
-        /*��������*/
-        animation-duration: 1s;
-        /*��������ʱ��*/
-        -webkit-animation: fade-in 1s;
-        /*���webkit�ں�*/
+    .v .vbtn.vsubmit {
+        border-radius: 0;
+        padding: 0;
+        color: #fff;
+        line-height: 44px;
+        width: 100%;
+        border: none;
+        background: #595485;
     }
 
-    @media screen and (max-width:1300px) {
-        .tag-container {
-            margin-top: 100px;
-            animation: fade-in;
-            /*��������*/
-            animation-duration: 1s;
-            /*��������ʱ��*/
-            -webkit-animation: fade-in 1s;
-            /*���webkit�ں�*/
+    .v .vwrap .vedit .vctrl span.vpreview-btn,
+    .v .vwrap .vcontrol .col.col-20,
+    .v .vlist .vcard .vhead .vsys {
+        display: none;
+    }
+
+    .v .vwrap .vmark .valert {
+        padding-top: 0px;
+    }
+
+    .vtext {
+        padding: 0;
+    }
+
+    @media screen and (max-width: 1300px) {
+        .v .vwrap .vmark .valert {
+            margin-top: 60%;
         }
+
+        .vwrap {
+            margin: 15px;
+            width: 100%;
+        }
+
+        .v .vwrap .vheader .vinput {
+            padding: 10px 5px;
+        }
+
+        .v .vwrap {
+            overflow: auto;
+        }
+
+        .v .veditor {
+            min-height: 30rem;
+            resize: none;
+        }
+
+        .v .vinput {
+            padding: 10px 15px;
+            font-size: 20px;
+        }
+
+        .v .vwrap .vedit .vctrl {
+            right: 0;
+        }
+
+        .v .vempty {
+            padding: 1.25em;
+            text-align: center;
+            color: #999;
+            font-size: 25px;
+        }
+
     }
 </style>
-<link rel="stylesheet" href="https://marunrun.github.io/media/css/font-awesome.css">
-<div class="tag-container">
-    
-    <div class="postshow">
-        
-        <div id="post" style="width:100%">
-            
-            <img src="http://pic.netbian.com/uploads/allimg/170610/174855-1497088135bff2.jpg" class="postimage"
-                onclick="window.location.href= 'https://marunrun.github.io/post/hyperf-grafana/';return false">
-            
-        <div class="posttitlebox">
-            <div class="posttitle" onclick="window.location.href= 'https://marunrun.github.io/post/hyperf-grafana/';return false">
-             在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
-        </div>
-    </div>
-</div>
-<div class="postinfo">
-    <div class="postdate"><i class="fa fa-calendar"></i>2020-02-06</div>
-    <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
-    <div class="posttag">
-        
-        <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="postlink">
-            <i class="fa fa-tag"></i> PHP
-        </a>
-        
-    </div>
-</div>
 
-</div>
+<body>
+    <div id="vcomments1"></div>
+    <script>
+        new Valine({
+            el: '#vcomments1',
+            appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+            appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+            notify: true,
+            verify: false,
+            avatar: 'retro',
+            pageSize: 10,
+            placeholder: '既然来了，那就留个痕迹吧~',
+            visitor: true // 阅读量统计
+        })
+    </script>
+</body>
 
-</div>
-        <div class="pagination-container">
-            
-            
+<script type="text/javascript">
+    jinrishici.load(function (result) {
+        var jrsc_plac = result.data.content + "\n「" + result.data.origin.title + "」" + result.data.origin
+            .dynasty + " · " + result.data.origin.author
+        document.getElementById("veditor").setAttribute("placeholder", jrsc_plac);
+    });
+</script>
+                <div class="clear"></div>
+                
+            </div>
         </div>
     </div>
     <div id="landlord">
@@ -619,7 +656,6 @@
 </body>
 
 </html>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
 
 
 <script>

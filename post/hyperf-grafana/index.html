@@ -1,16 +1,6 @@
-<html>
-  <head>
-    <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控 | Marun&#39;s Blog</title>
-<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1596799276574">
-<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
-<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
-<link rel="alternate" type="application/atom+xml" title=" 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控 | Marun&#39;s Blog - Atom Feed" href="https://marunrun.github.io/atom.xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
-
-
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="参考： hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示
 hyperf文档
 
@@ -18,94 +8,318 @@ hyperf文档
 
 一..." />
     <meta name="keywords" content="PHP" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
-    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
-  </head>
-  <body>
-    <div class="main">
-      <div class="main-content">
-        <div class="site-header">
-  <a href="https://marunrun.github.io">
-  <img class="avatar" src="https://marunrun.github.io/images/avatar.png?v=1596799276574" alt="">
-  </a>
-  <h1 class="site-title">
-    Marun&#39;s Blog
-  </h1>
-  <p class="site-description">
-    day day up
-  </p>
-  <div class="menu-container">
+    <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
     
-      
-        <a href="/" class="menu">
-          首页
-        </a>
-      
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/default.min.css">
+              
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <script src="https://marunrun.github.io/media/js/clipboard.min.js"></script>
+    <link rel="stylesheet" href="https://marunrun.github.io/media/css/live2d.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.13.1/css/all.min.css" rel="stylesheet">
+    <!-- 数学公式 -->
     
-      
-        <a href="/archives" class="menu">
-          归档
-        </a>
-      
+    <title>Marun's Blog</title>
     
-      
-        <a href="/tags" class="menu">
-          标签
-        </a>
-      
+    <style>
+        .markdownIt-TOC {
+            padding-left: 2px;
+            width: 100%;
+        }
+        .markdownIt-TOC li{
+            padding-left: 2%;
+        }
+    </style>
     
-      
-        <a href="/post/about" class="menu">
-          关于
-        </a>
-      
-    
-  </div>
-  <div class="social-container">
-    
-      
-        <a href="https://github.com/,marunrun" target="_blank">
-          <i class="ri-github-line"></i>
-        </a>
-      
-    
-      
-    
-      
-        <a href="https://weibo.com/maruna" target="_blank">
-          <i class="ri-weibo-line"></i>
-        </a>
-      
-    
-      
-    
-      
-    
-  </div>
-</div>
+</head>
 
-        <div class="post-detail">
-          <article class="post">
-            <h2 class="post-title">
-               在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
-            </h2>
-            <div class="post-info">
-              <span>
-                2020-02-06
-              </span>
-              <span>
-                4 min read
-              </span>
-              
-                <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="post-tag">
-                  # PHP
-                </a>
-              
+<body>
+    <!-- 响应式布局，针对PC端内容显示 -->
+    <div id="content">
+        <div class="nav-large">
+            <div class="row">
+                <div class="side"><head>
+    <meta name="description" content="day day up" />
+    <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
+</head>
+
+
+<body>
+    
+
+
+
+    
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://marunrun.github.io"
+                    style="font-size:21px">Marun&#39;s Blog&nbsp;&nbsp;|&nbsp;&nbsp;</a>
+                <a class="navbar-brand" href=""
+                    style="font-size:15px;font-family:kaiti">day day up</a>
             </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse">
+                
+                <div class="search nav navbar-nav" style="margin-top:8px">
+                    <!-- <input type="text" class="search-input" placeholder="标题搜索(●'◡'●)" /> -->
+                    <input type="text" class="search-input" placeholder="标题搜索 ⚆_⚆ つ♡">
+                    <div class="search-results"></div>
+                </div>
+                
+                <div class="search nav navbar-nav">
+                <a title="text" onclick="document.getElementById('socialMenu').style.display='block'"><i><img class="social"
+                    src="https://marunrun.github.io/media/images/social.png" alt=""></i></a>
+            </div>
+            <ul class="nav navbar-nav" style="float: right;margin-right:5%">
+                
+                
+                <li>
+                    <a href="/" style="color:white">
+                        首页
+                    </a>
+                </li>
+                
+                
+                
+                <li>
+                    <a href="/archives" style="color:white">
+                        归档
+                    </a>
+                </li>
+                
+                
+                
+                <li>
+                    <a href="/tags" style="color:white">
+                        标签
+                    </a>
+                </li>
+                
+                
+                
+                <li>
+                    <a href="/post/about" style="color:white">
+                        关于
+                    </a>
+                </li>
+                
+                
+                
+                  
+                <li><a href="https://marunrun.github.io/friends" style="color:white">友链</a></li>
+                
+                  <li><img src="https://marunrun.github.io/images/avatar.png?v=1596801095140" alt=""
+                class="menutopavatar"></li>
+            </ul>
+        </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div id="socialMenu" class="modal">
+        <div class="animate">
+            <div class="socialContainer">
+                
+                <a href="https://github.com/marunrun" target="_blank"><i><img class="icon"
+                            src="https://marunrun.github.io/media/images/github.png" alt=""></i></a>
+                
+                
+                <a onclick="showqq()" style="cursor:pointer"><i><img class="icon" src="https://marunrun.github.io/media/images/QQ.png"
+                            alt=""></i></a>
+                
+                
+                
+                
+                
+            </div>
+            <div id="qq" style="display:none">786506342</div>
+        </div>
+    </div>
+    <!-- 引入jQuery核心js文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
+    <script>
+        var social = document.getElementById('socialMenu');
+        // 鼠标点击模型外区域关闭登录框
+        window.onclick = function (event) {
+            if (event.target == social) {
+                social.style.display = "none";
+            }
+        }
+    </script>
+    
+</body>
+<script>
+    //-------------------------------------------------搜索
+    // 获取搜索框、搜索按钮、清空搜索、结果输出对应的元素
+    var searchInput = document.querySelector('.search-input');
+    var searchResults = document.querySelector('.search-results');
+
+    // 申明保存文章的标题、链接、内容的数组变量
+    var searchValue = '',
+        arrItems = [],
+        arrLinks = [],
+        arrTitles = [],
+        arrResults = [],
+        indexItem = [],
+        itemLength = 0;
+    var tmpDiv = document.createElement('div');
+    tmpDiv.className = 'result-item';
+
+    // ajax 的兼容写法
+    var xhr = new XMLHttpRequest() || new ActiveXObject('Microsoft.XMLHTTP');
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            xml = xhr.responseXML;
+            arrItems = xml.getElementsByTagName('entry');
+            itemLength = arrItems.length;
+            // 遍历并保存所有文章对应的标题、链接、内容到对应的数组中
+            // 同时过滤掉 HTML 标签
+            for (i = 0; i < itemLength; i++) {
+                var link = arrItems[i].getElementsByTagName('link')[0];
+                arrLinks[i] = link.getAttribute("href");
+                arrTitles[i] = arrItems[i].getElementsByTagName('title')[0].
+                childNodes[0].nodeValue.replace(/<.*?>/g, '');
+            }
+        }
+    }
+
+    // 开始获取根目录下 feed.xml 文件内的数据
+    xhr.open('get', '/atom.xml', true);
+    xhr.send();
+
+
+
+    // 输入框内容变化后就开始匹配，可以不用点按钮
+    // 经测试，onkeydown, onchange 等方法效果不太理想，
+    // 存在输入延迟等问题，最后发现触发 input 事件最理想，
+    // 并且可以处理中文输入法拼写的变化
+    searchInput.oninput = function () {
+        setTimeout(searchConfirm, 0);
+    }
+    searchInput.onfocus = function () {
+        searchResults.style.display = 'block';
+    }
+
+    function searchConfirm() {
+        if (searchInput.value == '') {
+            searchResults.style.display = 'none';
+        } else if (searchInput.value.search(/^\s+$/) >= 0) {
+            // 检测输入值全是空白的情况
+            searchInit();
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '请输入有效内容...';
+            searchResults.appendChild(itemDiv);
+        } else {
+            // 合法输入值的情况
+            searchInit();
+            searchValue = searchInput.value;
+            // 在标题、内容中查找
+            searchMatching(arrTitles, searchValue);
+        }
+    }
+
+    // 每次搜索完成后的初始化
+    function searchInit() {
+        arrResults = [];
+        indexItem = [];
+        searchResults.innerHTML = '';
+        searchResults.style.display = 'block';
+    }
+
+    function searchMatching(arr1, input) {
+        // 忽略输入大小写
+        input = new RegExp(input, 'i');
+        // 在所有文章标题、内容中匹配查询值
+        for (i = 0; i < itemLength; i++) {
+            if (arr1[i].search(input) !== -1) {
+                var arr = arr1;
+                indexItem.push(i); // 保存匹配值的索引
+                var indexContent = arr[i].search(input);
+                // 此时 input 为 RegExp 格式 /input/i，转换为原 input 字符串长度
+                var l = input.toString().length - 3;
+                var step = 10;
+
+                // 将匹配到内容的地方进行黄色标记，并包括周围一定数量的文本
+                arrResults.push(arr[i].slice(indexContent - step, indexContent));
+            }
+        }
+
+        // 输出总共匹配到的数目
+        var totalDiv = tmpDiv.cloneNode(true);
+        totalDiv.innerHTML = '<b>总匹配：' + indexItem.length + ' 项<hr></b>';
+        searchResults.appendChild(totalDiv);
+
+        // 未匹配到内容的情况
+        if (indexItem.length == 0) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerText = '未匹配到内容...';
+            searchResults.appendChild(itemDiv);
+        }
+
+        // 将所有匹配内容进行组合
+        for (i = 0; i < arrResults.length; i++) {
+            var itemDiv = tmpDiv.cloneNode(true);
+            itemDiv.innerHTML = '<b>[' + arrTitles[indexItem[i]] +
+                ']</b><p>' + arrResults[i] + "</p><hr />";
+            itemDiv.setAttribute('onclick', 'changeHref(arrLinks[indexItem[' + i + ']])');
+            searchResults.appendChild(itemDiv);
+        }
+    }
+
+    function changeHref(href) {
+        location.href = href;
+    }
+
+    function showqq() {
+        var qq = document.getElementById("qq").innerHTML;
+        if (qq != '')
+            alert("博主的QQ联系方式为：" + qq);
+        else
+            alert("博主暂未设置QQ联系方式");
+    }
+</script></div>
+    
+    <div id="main" class="col-xs-12 col-sm-7" style="width:50%;margin-top:50px;left:27%">
+        <link rel="stylesheet" href="https://marunrun.github.io/media/css/font-awesome.css">
+<style>
+
+</style>
+
+<body>
+    <div class="allcontent" id="postdetail">
+        <div class="postshow">
             
-            <div class="post-content-wrapper">
-              <div class="post-content">
-                <p>参考： <a href="https://segmentfault.com/a/1190000021443167?utm_source=tag-newest" title="hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示">hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示</a><br>
+            <div class="postdetailimg" style="width:100%;overflow: hidden;display: none">
+                
+                <img src="http://pic.netbian.com/uploads/allimg/170610/174855-1497088135bff2.jpg" class="postimage">
+                
+            </div>
+            <div class="postinfo-detail">
+                <div class="postdate"><i class="fa fa-calendar"></i>2020-02-06</div>
+            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
+            <div class="posttag">
+                
+                <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="postlink">
+                    <i class="fa fa-tag"></i> PHP
+                </a>
+                
+            </div>
+        </div>
+        
+        <div id="texttitle" style="text-align: center">
+            <h2> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控</h2>
+            <!-- id 将作为查询条件 -->
+            <div id="pl" style="display:none">https://marunrun.github.io/post/hyperf-grafana/</div>
+            <div id="rootaddr" style="display:none">https://marunrun.github.io</div>
+            <span id="hotnum" class="leancloud_visitors" data-flag-title=" 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控">
+                <h4 class="readercount">热度🔥: <i class="leancloud-visitors-count">loading...</i></h4>
+            </span>
+        </div>
+        <div class="text ">
+            <p>参考： <a href="https://segmentfault.com/a/1190000021443167?utm_source=tag-newest" title="hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示">hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示</a><br>
 <a href="https://doc.hyperf.io/#/zh-cn/metric?id=%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%8a%e6%8a%a5" title="hyperf文档">hyperf文档</a></p>
 <blockquote>
 <p>本文章记录本人的第一次部署所踩的坑，未深入了解prometheus 和grafana 如有不当的地方请指正，谢谢！</p>
@@ -263,99 +477,708 @@ services:
 <figure data-type="image" tabindex="7"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/e2PWrRa107.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
 <p>到此结束，小白第一次配置监控，还有很多东西没弄清楚</p>
 
-              </div>
-              <div class="toc-container">
-                <ul class="markdownIt-TOC">
+        </div>
+        
+        
+    </div>
+    </div>
+</body>
+<script>
+    var t_img; // 定时�?
+    var isLoad = true; // 控制变量
+    isImgLoad(function () {
+        // 加载完成
+        $('.postdetailimg').css("display", "block");
+    });
+    // 判断图片加载的函�?
+    function isImgLoad(callback) {
+        // 注意我的图片类名都是cover，因为我�?需要�?�理cover。其它图片可以不管�?
+        // 查找所有封面图，迭代�?�理
+        $('.postdetailimg').each(function () {
+            // 找到�?0就将isLoad设为false，并退出each
+            if (this.height === 0) {
+                isLoad = false;
+                return false;
+            }
+        });
+        // 为true，没有发现为0的。加载完�?
+        if (isLoad) {
+            clearTimeout(t_img); // 清除定时�?
+            // 回调函数
+            callback();
+            // 为false，因为找到了没有加载完成的图，将调用定时器递归
+        } else {
+            isLoad = true;
+            t_img = setTimeout(function () {
+                isImgLoad(callback); // 递归�?�?
+            }, 500); // 我这里�?�置的是500�?秒就�?描一次，�?以自己调�?
+        }
+    }
+
+    //文章阅读热度
+    var pl = $("#pl").html();
+    var rootaddr = $("#rootaddr").html();
+    pl = pl.replace(rootaddr, "");
+    $("#hotnum").attr('id', pl);
+</script>
+        <div name="comment" style="background: white">
+            <div class="commentcontainer">
+                
+                <head>
+    <script src='https://marunrun.github.io/media/js/valine.min.js'></script>
+    <script src="https://marunrun.github.io/media/js/jquery.min.js"></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+</head>
+<style>
+    @media screen and (min-width: 1300px) {
+        .v .vbtn .vsubmit {
+            border-radius: 0;
+            padding: 0;
+            color: #fff;
+            line-height: 44px;
+            width: 100%;
+            border: none;
+            background: #595485;
+        }
+
+        .v .vwrap .vedit .vctrl span.vpreview-btn,
+        .v .vwrap .vcontrol .col.col-20,
+        .v .vlist .vcard .vhead .vsys {
+            display: none;
+        }
+
+        .v .vwrap .vmark .valert {
+            padding-top: 0px;
+        }
+
+        .vtext {
+            padding: 0;
+        }
+    }
+</style>
+
+<body>
+    <div id="vcomments">
+    </div>
+    <script>
+        new Valine({
+            el: '#vcomments',
+            appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+            appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+            notify: true,
+            verify: false,
+            avatar: 'retro',
+            pageSize: 10,
+            placeholder: '既然来了，何不畅所欲言呢？',
+            visitor: true // 阅读量统计
+        })
+    </script>
+</body>
+
+
+<script type="text/javascript">
+    jinrishici.load(function (result) {
+        var jrsc_plac = result.data.content + "\n「" + result.data.origin.title + "」" + result.data.origin
+            .dynasty + " · " + result.data.origin.author
+        document.getElementById("veditor").setAttribute("placeholder", jrsc_plac);
+    });
+</script>
+                <div class="clear"></div>
+                
+            </div>
+        </div>
+    </div>
+     
+                <div class="toc-container">
+                    <ul class="markdownIt-TOC">
 <li><a href="#%E4%B8%80-%E4%BD%BF%E7%94%A8docker-compose%E9%83%A8%E7%BD%B2">一. 使用docker-compose部署</a></li>
 <li><a href="#%E4%BA%8C-%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE">二. 项目配置</a></li>
 <li><a href="#%E4%B8%89-prometheus%E7%9A%84%E9%85%8D%E7%BD%AE">三. prometheus的配置</a></li>
 <li><a href="#%E5%9B%9B-grafana-%E9%85%8D%E7%BD%AE">四. Grafana 配置</a></li>
 </ul>
 
-              </div>
-            </div>
-          </article>
+    </div>
+    </div>
+    </div>
+    <div class="toggleContainer">
+        <div class="toggle">
+            <i class="fas fa-angle-double-up"></i>
         </div>
+    </div>
+    <div id="bg">
+    </div>
+    <div id="bgchoice" style="display: none">link</div>
+    
+    <div id="bgurl" style="display:none">http://pic.netbian.com/uploads/allimg/170610/174855-1497088135bff2.jpg</div>
+       
+    </div>
+    <!-- 响应式布局，针对手机端内容显示 -->
+    <div class="nav-small">
+        <head>
+  <!-- 引入Bootstrap核心样式文件 -->
+  <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
+</head>
 
-        
+<body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+          data-target="#barmenu" aria-expanded="false" id="barbutton">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="https://marunrun.github.io">Marun&#39;s Blog&nbsp;&nbsp;|</a>
+      </div>
 
-        
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="barmenu">
+        <ul class="nav navbar-nav">
           
-            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
-<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+          
+          <li>
+            <a href="/">
+              首页
+            </a>
+          </li>
+          
+          
+          
+          <li>
+            <a href="/archives">
+              归档
+            </a>
+          </li>
+          
+          
+          
+          <li>
+            <a href="/tags">
+              标签
+            </a>
+          </li>
+          
+          
+          
+          <li>
+            <a href="/post/about">
+              关于
+            </a>
+          </li>
+          
+          
+          
+          
+          <li><a href="https://marunrun.github.io/friends">友链</a></li>
 
-<div id="gitalk-container"></div>
+          
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
 
-<script>
 
-  var gitalk = new Gitalk({
-    clientID: '26fc5fd105a751889dba',
-    clientSecret: 'cd035906e5b7ec76b4d985da49b74c739ba3780b',
-    repo: 'marunrun.github.io',
-    owner: 'marunrun',
-    admin: ['marunrun'],
-    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-    distractionFreeMode: false  // Facebook-like distraction free mode
+  <!-- 引入jQuery核心js文件 -->
+  <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script>
+  var btstate = false;
+  var bt = $("#barbutton");
+  var bm = $("#barmenu");
+  bt.click(function(){
+    dropdown();
   })
+  function dropdown(){
+    console.log(btstate);
+    //下拉
+    if(btstate==false){
+      bt.removeClass("collapsed");
+      bt.attr("aria-expanded","true");
+      bm.attr("aria-expanded","true")
+      bm.fadeIn(700);
+      btstate = true;
+    }
+    else{
+      bt.addClass("collapsed");
+      bt.attr("aria-expanded","false");
+      bm.removeClass("in");
+      bm.hide();
+      bm.attr("aria-expanded","false");
+      btstate = false;
+    }
+  }
+  </script> 
+</body>
+    <div style="margin-top:30px"></div>
+    <link rel="stylesheet" href="https://marunrun.github.io/media/css/font-awesome.css">
+<style>
 
-  gitalk.render('gitalk-container')
+</style>
 
+<body>
+    <div class="allcontent" id="postdetail">
+        <div class="postshow">
+            
+            <div class="postdetailimg" style="width:100%;overflow: hidden;display: none">
+                
+                <img src="http://pic.netbian.com/uploads/allimg/170610/174855-1497088135bff2.jpg" class="postimage">
+                
+            </div>
+            <div class="postinfo-detail">
+                <div class="postdate"><i class="fa fa-calendar"></i>2020-02-06</div>
+            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
+            <div class="posttag">
+                
+                <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="postlink">
+                    <i class="fa fa-tag"></i> PHP
+                </a>
+                
+            </div>
+        </div>
+        
+        <div id="texttitle" style="text-align: center">
+            <h2> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控</h2>
+            <!-- id 将作为查询条件 -->
+            <div id="pl" style="display:none">https://marunrun.github.io/post/hyperf-grafana/</div>
+            <div id="rootaddr" style="display:none">https://marunrun.github.io</div>
+            <span id="hotnum" class="leancloud_visitors" data-flag-title=" 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控">
+                <h4 class="readercount">热度🔥: <i class="leancloud-visitors-count">loading...</i></h4>
+            </span>
+        </div>
+        <div class="text ">
+            <p>参考： <a href="https://segmentfault.com/a/1190000021443167?utm_source=tag-newest" title="hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示">hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示</a><br>
+<a href="https://doc.hyperf.io/#/zh-cn/metric?id=%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%8a%e6%8a%a5" title="hyperf文档">hyperf文档</a></p>
+<blockquote>
+<p>本文章记录本人的第一次部署所踩的坑，未深入了解prometheus 和grafana 如有不当的地方请指正，谢谢！</p>
+</blockquote>
+<h1 id="一-使用docker-compose部署">一. 使用docker-compose部署</h1>
+<pre><code class="language-yaml">version: '2'
+networks:
+  monitor:
+    driver: bridge
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    restart: always
+    volumes:
+		# 将你的prometheus.yml文件放在当前文件同级下，或自定义
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      #- /home/prometheus/node_down.yml:/etc/prometheus/node_down.yml
+    ports:
+      - &quot;9090:9090&quot;
+    networks:
+      monitor:
+        ipv4_address: 172.18.0.3
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    hostname: grafana
+    restart: always
+	volumes:
+	# 创建 etc目录，data目录存储grafana的数据
+	- ./etc:/etc/grafana
+	- ./data:/var/lib/grafana
+    ports:
+      - &quot;3000:3000&quot;
+    networks:
+      monitor:
+        ipv4_address: 172.18.0.4
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    hostname: node-exporter
+    restart: always
+    ports:
+      - &quot;9100:9100&quot;
+    networks:
+      monitor:
+        ipv4_address: 172.18.0.2
+
+</code></pre>
+<blockquote>
+<p>注意：为了避免每次docker-compose 启动之后 ip会发生变化，我这里配置了固定IP，请根据个人实际情况配置，或参阅docker相关文档</p>
+</blockquote>
+<p>使用命令<code>docker-compose up</code>启动容器</p>
+<h1 id="二-项目配置">二. 项目配置</h1>
+<p>因为对 <code>prometheus</code>的不了解，我直接使用<code>hyperf</code>默认配置</p>
+<ul>
+<li>
+<p>引入组件 <code>composer require hyperf/metric</code></p>
+</li>
+<li>
+<p>发布默认配置文件 <code>php bin/hyperf.php vendor:publish hyperf/metric</code></p>
+</li>
+<li>
+<p>在<code>config/autoload/dependencies.php</code>中添加对应的Redis存储</p>
+</li>
+</ul>
+<pre><code class="language-php">return [
+    \Prometheus\Storage\Adapter::class =&gt; \Hyperf\Metric\Adapter\Prometheus\RedisStorageFactory::class,
+];
+</code></pre>
+<blockquote>
+<p>在上面的第一篇文章中，老哥说使用<code>swoole_table</code>更高效，我还不知道如何使用，有兴趣的老哥可以自己研究一下。</p>
+</blockquote>
+<ul>
+<li>增加中间件<br>
+在<code>config/autoload/middlewares.php</code>文件中增加对应的中间件</li>
+</ul>
+<pre><code class="language-php">return [
+   'http' =&gt; [
+       \Hyperf\Metric\Middleware\MetricMiddleware::class,
+   ],
+];
+</code></pre>
+<ul>
+<li>添加 <code>metrics</code>路由</li>
+</ul>
+<pre><code class="language-php">Router::get('/metrics', function(){
+    $registry = Hyperf\Utils\ApplicationContext::getContainer()-&gt;get(Prometheus\CollectorRegistry::class);
+    $renderer = new Prometheus\RenderTextFormat();
+    return $renderer-&gt;render($registry-&gt;getMetricFamilySamples());
+});
+</code></pre>
+<p>这样对项目的配置就完成了</p>
+<h1 id="三-prometheus的配置">三. prometheus的配置</h1>
+<p>在  <code>prometheus.yml</code>文件中增加对应的配置</p>
+<pre><code class="language-yml">scrape_configs:
+  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+    - targets: ['localhost:9090']
+	
+  - job_name: 'node'
+
+	 # 注意这里的IP需要填写 node-exporter 容器的ip  
+    static_configs:
+    - targets: ['172.18.0.2:9100']
+
+
+  - job_name: 'skeleton'
+    # 这里填写的是宿主机的ip
+    static_configs:
+    - targets: ['10.0.75.1:9502']
+
+</code></pre>
+<p>配置完成之后，再次 <code>dokcer-compose up</code></p>
+<p>访问 http://localhost:9090 查看 <code>prometheus</code></p>
+<figure data-type="image" tabindex="1"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/KCN9pbJlBS.png!large" alt="[Hyperf]  在Hyperf框架中使用prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>如图所示，<code>node</code> 和 <code>skeleton</code> 都已启动</p>
+<h1 id="四-grafana-配置">四. Grafana 配置</h1>
+<p>上面都配置完了，开始配置 <code>Grafana</code><br>
+打开 http://localhost:3000 默认密码是: admin/admin</p>
+<ul>
+<li>新建<code>datasource</code><br>
+左侧边栏 <code>add datasources</code> 选择<code>Prometheus</code></li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/UJygfIos1n.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<ul>
+<li>配置 <code>datasource</code></li>
+</ul>
+<figure data-type="image" tabindex="3"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/egc52EVNmZ.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<blockquote>
+<p>填写容器的IP:端口</p>
+</blockquote>
+<ul>
+<li>导入<code>hyperf</code>官方的<code>JSON</code>文件</li>
+</ul>
+<figure data-type="image" tabindex="4"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/Aw2cEdBUkx.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>导入之后需要将默认的 <code>app_name</code>改成你自己的<br>
+如：<code>admin-api</code> 就需要填写<code>admin_api</code> 改成下划线形式</p>
+<figure data-type="image" tabindex="5"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/N9a9SnXRyf.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<ul>
+<li>查看监控<br>
+在Home中你就可以看到了</li>
+</ul>
+<figure data-type="image" tabindex="6"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/WOELFeGOo9.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>点进去查看</p>
+<figure data-type="image" tabindex="7"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/e2PWrRa107.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>到此结束，小白第一次配置监控，还有很多东西没弄清楚</p>
+
+        </div>
+        
+        
+    </div>
+    </div>
+</body>
+<script>
+    var t_img; // 定时�?
+    var isLoad = true; // 控制变量
+    isImgLoad(function () {
+        // 加载完成
+        $('.postdetailimg').css("display", "block");
+    });
+    // 判断图片加载的函�?
+    function isImgLoad(callback) {
+        // 注意我的图片类名都是cover，因为我�?需要�?�理cover。其它图片可以不管�?
+        // 查找所有封面图，迭代�?�理
+        $('.postdetailimg').each(function () {
+            // 找到�?0就将isLoad设为false，并退出each
+            if (this.height === 0) {
+                isLoad = false;
+                return false;
+            }
+        });
+        // 为true，没有发现为0的。加载完�?
+        if (isLoad) {
+            clearTimeout(t_img); // 清除定时�?
+            // 回调函数
+            callback();
+            // 为false，因为找到了没有加载完成的图，将调用定时器递归
+        } else {
+            isLoad = true;
+            t_img = setTimeout(function () {
+                isImgLoad(callback); // 递归�?�?
+            }, 500); // 我这里�?�置的是500�?秒就�?描一次，�?以自己调�?
+        }
+    }
+
+    //文章阅读热度
+    var pl = $("#pl").html();
+    var rootaddr = $("#rootaddr").html();
+    pl = pl.replace(rootaddr, "");
+    $("#hotnum").attr('id', pl);
+</script>
+    <div name="comment" style="background: white;margin-top:100px">
+        <div class="commentcontainer">
+            
+            <head>
+    <script src='https://marunrun.github.io/media/js/valine.min.js'></script>
+    <script src="https://marunrun.github.io/media/js/jquery.min.js"></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+</head>
+<style>
+    @media screen and (min-width: 1300px) {
+        .v {
+            margin-top: 10%;
+        }
+
+        .v .vwrap {
+            overflow: hidden;
+        }
+
+        .v .vwrap {
+            padding: 0 0 44px;
+        }
+
+        .v .veditor {
+            resize: none;
+        }
+
+        .veditor::placeholder {
+            color: #b3b3b3;
+            font-size: 18px;
+            text-align: center;
+            line-height: 3rem;
+            font-family: kaiti;
+        }
+
+        .v .vwrap .vedit {
+            padding-top: 0
+        }
+
+        .v .vwrap .vheader {
+            width: 80%;
+            bottom: 0;
+            position: absolute;
+            background: #f7f7f7;
+        }
+
+        .v .vinput {
+            padding: 10px 15px;
+        }
+
+        .v .vwrap .vheader .vinput {
+            border-bottom: 0px
+        }
+
+        .v .vwrap .vedit .vctrl {
+            margin-top: -44px;
+            right: 0;
+            position: absolute;
+            margin-right: -3px;
+        }
+
+        .v .vwrap .vcontrol {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 20%;
+            padding-top: 0px;
+        }
+    }
+
+    .v .vwrap .vcontrol .col.col-80 {
+        width: 100%;
+    }
+
+    .v .vbtn.vsubmit {
+        border-radius: 0;
+        padding: 0;
+        color: #fff;
+        line-height: 44px;
+        width: 100%;
+        border: none;
+        background: #595485;
+    }
+
+    .v .vwrap .vedit .vctrl span.vpreview-btn,
+    .v .vwrap .vcontrol .col.col-20,
+    .v .vlist .vcard .vhead .vsys {
+        display: none;
+    }
+
+    .v .vwrap .vmark .valert {
+        padding-top: 0px;
+    }
+
+    .vtext {
+        padding: 0;
+    }
+
+    @media screen and (max-width: 1300px) {
+        .v .vwrap .vmark .valert {
+            margin-top: 60%;
+        }
+
+        .vwrap {
+            margin: 15px;
+            width: 100%;
+        }
+
+        .v .vwrap .vheader .vinput {
+            padding: 10px 5px;
+        }
+
+        .v .vwrap {
+            overflow: auto;
+        }
+
+        .v .veditor {
+            min-height: 30rem;
+            resize: none;
+        }
+
+        .v .vinput {
+            padding: 10px 15px;
+            font-size: 20px;
+        }
+
+        .v .vwrap .vedit .vctrl {
+            right: 0;
+        }
+
+        .v .vempty {
+            padding: 1.25em;
+            text-align: center;
+            color: #999;
+            font-size: 25px;
+        }
+
+    }
+</style>
+
+<body>
+    <div id="vcomments1"></div>
+    <script>
+        new Valine({
+            el: '#vcomments1',
+            appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+            appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+            notify: true,
+            verify: false,
+            avatar: 'retro',
+            pageSize: 10,
+            placeholder: '既然来了，那就留个痕迹吧~',
+            visitor: true // 阅读量统计
+        })
+    </script>
+</body>
+
+<script type="text/javascript">
+    jinrishici.load(function (result) {
+        var jrsc_plac = result.data.content + "\n「" + result.data.origin.title + "」" + result.data.origin
+            .dynasty + " · " + result.data.origin.author
+        document.getElementById("veditor").setAttribute("placeholder", jrsc_plac);
+    });
+</script>
+            <div class="clear"></div>
+            
+        </div>
+    </div>
+    </div>
+    <div id="landlord">
+        <div class="message" style="opacity:0"></div>
+        <canvas id="live2d" width="240" height="250" class="live2d"></canvas>
+    </div>
+    <div id="codeCopyText" style="display: none">代码复制成功了哦</div>
+    <div id="domainname" style="display:none">https://marunrun.github.io</div>
+    </body>
+    <script src="https://marunrun.github.io/media/js/post.js"></script>
+    <script>
+        //寻找所有code标签，加复制按钮鸭！(行内代码除外)
+        var codes = document.getElementsByTagName('code');
+        if (codes.length) {
+            for (var i = 0; i < codes.length; i++) {
+                //高度/行高=文本行数
+                // var rowNum=Math.round(codes[i].height()/parseFloat(codes[i].css('line-height')));
+                // console.log("当前有"+rowNum+"行");
+                var code_id = "code_id_" + i;
+                codes[i].setAttribute("id", code_id);
+                var ci = "#" + code_id;
+                var codedot = $(ci);
+                var rowNum = Math.round(codedot.height() / parseFloat(codedot.css('line-height')));
+                if (rowNum <= 1) continue;
+                var btn = document.createElement("button");
+                btn.setAttribute("class", "copybt");
+                btn.setAttribute("data-clipboard-target", "#" + code_id);
+                btn.innerHTML = '复制代码';
+                codes[i].parentNode.insertBefore(btn, codes[i]);
+            }
+        };
+        var cop = new ClipboardJS('.copybt');
+        var codeCopyText = $("#codeCopyText").html();
+        cop.on('success', function (e) {
+            alert(codeCopyText);
+            e.clearSelection();
+        });
+        cop.on('error', function (e) {
+            alert("矮油，复制失败了...手动复制吧勇士！");
+            e.clearSelection();
+        });
+    </script>
+    
+<script>
+$(function () {
+    $('.toggleContainer').click(function(){$('html,body').animate({scrollTop: '0px'}, 800);});
+	$(window).scroll(function() {
+        var st = $(window).scrollTop();
+        if(st > 30){
+            $(".toggleContainer").fadeIn(400);
+        }else{
+            $(".toggleContainer").fadeOut(100);
+        }
+	});
+});
 </script>
 
-          
-
-          
-        
-
-        <div class="site-footer">
-  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
-  <a class="rss" href="https://marunrun.github.io/atom.xml" target="_blank">
-    <i class="ri-rss-line"></i> RSS
-  </a>
-</div>
-
-      </div>
-    </div>
-
-    <script>
-      hljs.initHighlightingOnLoad()
-
-      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
-
-      // This should probably be throttled.
-      // Especially because it triggers during smooth scrolling.
-      // https://lodash.com/docs/4.17.10#throttle
-      // You could do like...
-      // window.addEventListener("scroll", () => {
-      //    _.throttle(doThatStuff, 100);
-      // });
-      // Only not doing it here to keep this Pen dependency-free.
-
-      window.addEventListener("scroll", event => {
-        let fromTop = window.scrollY;
-
-        mainNavLinks.forEach((link, index) => {
-          let section = document.getElementById(decodeURI(link.hash).substring(1));
-          let nextSection = null
-          if (mainNavLinks[index + 1]) {
-            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
-          }
-          if (section.offsetTop <= fromTop) {
-            if (nextSection) {
-              if (nextSection.offsetTop > fromTop) {
-                link.classList.add("current");
-              } else {
-                link.classList.remove("current");    
-              }
-            } else {
-              link.classList.add("current");
-            }
-          } else {
-            link.classList.remove("current");
-          }
-        });
-      });
-
-    </script>
-  </body>
-</html>
+<script>
+        var bgchoice=$('#bgchoice').html();
+        var bg = $('#bg');
+        var bgurl = document.getElementById("bgurl").innerHTML;
+        if(bgchoice=='default')
+            for (var i = 0; i < 3; i++)
+                bgurl = bgurl.replace("\\", "/");
+        bg.css("background", "url('" + bgurl + "')");
+</script>
