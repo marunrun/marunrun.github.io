@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://marunrun.github.io</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2020-08-09T07:24:16.216Z</updated>
+    <updated>2020-09-11T07:31:43.270Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://marunrun.github.io"/>
     <link rel="self" href="https://marunrun.github.io/atom.xml"/>
@@ -10,6 +10,118 @@
     <logo>https://marunrun.github.io/images/avatar.png</logo>
     <icon>https://marunrun.github.io/favicon.ico</icon>
     <rights>All rights reserved 2020, Marun&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[mysql中 group by排序，derived_merge优化的坑]]></title>
+        <id>https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/</id>
+        <link href="https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/">
+        </link>
+        <updated>2020-09-11T07:23:21.000Z</updated>
+        <content type="html"><![CDATA[<p>一个简单的表</p>
+<pre><code class="language-mysql">CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `spu_id` int(11) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+</code></pre>
+<p>大概内容</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>spu_id</th>
+<th>price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>100</td>
+<td>200</td>
+</tr>
+<tr>
+<td>2</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>200</td>
+<td>400</td>
+</tr>
+<tr>
+<td>4</td>
+<td>200</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<p>对spu_id进行分组，按price从小到大排序：</p>
+<pre><code class="language-mysql">SELECT * FROM `test`  GROUP BY spu_id ORDER BY price
+</code></pre>
+<p>直接使用group by 查出来的数据是按id顺序分组的，并未达到预期</p>
+<ol>
+<li>尝试使用子查询，先排序再分组</li>
+</ol>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price ) AS tmp 
+GROUP BY spu_id
+</code></pre>
+<blockquote>
+<p>注意：这个方式在低版本中有效。在5.7版本中引入新特性 derived_merge优化过后无效了。</p>
+</blockquote>
+<p>具体无效原因我们可使用<code>explain</code> 分析</p>
+<pre><code class="language-mysql">EXPLAIN
+SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price) AS tmp 
+GROUP BY spu_id;
+</code></pre>
+<p>如图所示：</p>
+<p><img src="http://img.runrun520.cn/J~~%5DIO91~U0EIZG2%5D4EM%25~A.png" alt="" loading="lazy"><br>
+MySQL 将子查询优化成了一个简单查询，子查询中的排序无效~</p>
+<p>解决方法：</p>
+<ol>
+<li>
+<p>将derived_merge 关闭</p>
+<p><code>SET optimizer_switch='derived_merge=off';</code></p>
+<p><code>SET GLOBAL optimizer_switch='derived_merge=off';</code></p>
+</li>
+<li>
+<p>使用特殊的查询阻止 <code>derived_merge</code> 优化</p>
+<p>可以通过在子查询中使用任何阻止合并的构造来禁用合并，尽管这些构造对实现的影响不那么明显。防止合并的构造与派生表和视图引用相同：</p>
+<ul>
+<li>聚合函数（<a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_sum"><code>SUM()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_min"><code>MIN()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_max"><code>MAX()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_count"><code>COUNT()</code></a>，等等）</li>
+<li><code>DISTINCT</code></li>
+<li><code>GROUP BY</code></li>
+<li><code>HAVING</code></li>
+<li><code>LIMIT</code></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION</code></a> 要么 <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION ALL</code></a></li>
+<li>选择列表中的子查询</li>
+<li>分配给用户变量</li>
+<li>仅引用文字值（在这种情况下，没有基础表）</li>
+</ul>
+</li>
+</ol>
+<p>以上内容参考文档：<a href="https://dev.mysql.com/doc/refman/5.7/en/derived-table-optimization.html">mysql文档</a></p>
+<p>那么我们可以将上面的那条sql语句修改为：</p>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` HAVING 1=1 ORDER BY price   ) AS tmp 
+GROUP BY spu_id;
+</code></pre>
+<p>使用 <code>having</code> 来阻止合并</p>
+<p>那么再用<code>explain</code>看看</p>
+<figure data-type="image" tabindex="1"><img src="http://img.runrun520.cn/QQ%E5%9B%BE%E7%89%8720200911153046.png" alt="image-20200911152244246" loading="lazy"></figure>
+<blockquote>
+<p>如有错误请指正~ 请多包涵</p>
+</blockquote>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[ 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控]]></title>
         <id>https://marunrun.github.io/post/hyperf-grafana/</id>

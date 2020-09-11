@@ -1,13 +1,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="参考： hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示
-hyperf文档
-
-本文章记录本人的第一次部署所踩的坑，未深入了解prometheus 和grafana 如有不当的地方请指正，谢谢！
-
-一..." />
-    <meta name="keywords" content="PHP" />
+    <meta name="description" content="一个简单的表
+CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `spu_id` int(11) DEFAULT NULL,
+  `price` decimal(..." />
+    <meta name="keywords" content="mysql" />
     <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
     
@@ -296,194 +295,141 @@ hyperf文档
                 
             </div>
             <div class="postinfo-detail">
-                <div class="postdate"><i class="fa fa-calendar"></i>2020-02-06</div>
-            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
+                <div class="postdate"><i class="fa fa-calendar"></i>2020-09-11</div>
+            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 2 min read</div>
             <div class="posttag">
                 
-                <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="postlink">
-                    <i class="fa fa-tag"></i> PHP
+                <a href="https://marunrun.github.io/tag/Isdsr38FG/" class="postlink">
+                    <i class="fa fa-tag"></i> mysql
                 </a>
                 
             </div>
         </div>
         
         <div id="texttitle" style="text-align: center">
-            <h2> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控</h2>
+            <h2>mysql中 group by排序，derived_merge优化的坑</h2>
             <!-- id 将作为查询条件 -->
-            <div id="pl" style="display:none">https://marunrun.github.io/post/hyperf-grafana/</div>
+            <div id="pl" style="display:none">https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/</div>
             <div id="rootaddr" style="display:none">https://marunrun.github.io</div>
-            <span id="hotnum" class="leancloud_visitors" data-flag-title=" 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控">
+            <span id="hotnum" class="leancloud_visitors" data-flag-title="mysql中 group by排序，derived_merge优化的坑">
                 <h4 class="readercount">热度🔥: <i class="leancloud-visitors-count">loading...</i></h4>
             </span>
         </div>
         <div class="text ">
-            <p>参考： <a href="https://segmentfault.com/a/1190000021443167?utm_source=tag-newest" title="hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示">hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示</a><br>
-<a href="https://doc.hyperf.io/#/zh-cn/metric?id=%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%8a%e6%8a%a5" title="hyperf文档">hyperf文档</a></p>
-<blockquote>
-<p>本文章记录本人的第一次部署所踩的坑，未深入了解prometheus 和grafana 如有不当的地方请指正，谢谢！</p>
-</blockquote>
-<h1 id="一-使用docker-compose部署">一. 使用docker-compose部署</h1>
-<pre><code class="language-yaml">version: '2'
-networks:
-  monitor:
-    driver: bridge
-
-services:
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    hostname: prometheus
-    restart: always
-    volumes:
-		# 将你的prometheus.yml文件放在当前文件同级下，或自定义
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      #- /home/prometheus/node_down.yml:/etc/prometheus/node_down.yml
-    ports:
-      - &quot;9090:9090&quot;
-    networks:
-      monitor:
-        ipv4_address: 172.18.0.3
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    hostname: grafana
-    restart: always
-	volumes:
-	# 创建 etc目录，data目录存储grafana的数据
-	- ./etc:/etc/grafana
-	- ./data:/var/lib/grafana
-    ports:
-      - &quot;3000:3000&quot;
-    networks:
-      monitor:
-        ipv4_address: 172.18.0.4
-
-  node-exporter:
-    image: prom/node-exporter
-    container_name: node-exporter
-    hostname: node-exporter
-    restart: always
-    ports:
-      - &quot;9100:9100&quot;
-    networks:
-      monitor:
-        ipv4_address: 172.18.0.2
-
+            <p>一个简单的表</p>
+<pre><code class="language-mysql">CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `spu_id` int(11) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+</code></pre>
+<p>大概内容</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>spu_id</th>
+<th>price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>100</td>
+<td>200</td>
+</tr>
+<tr>
+<td>2</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>200</td>
+<td>400</td>
+</tr>
+<tr>
+<td>4</td>
+<td>200</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<p>对spu_id进行分组，按price从小到大排序：</p>
+<pre><code class="language-mysql">SELECT * FROM `test`  GROUP BY spu_id ORDER BY price
+</code></pre>
+<p>直接使用group by 查出来的数据是按id顺序分组的，并未达到预期</p>
+<ol>
+<li>尝试使用子查询，先排序再分组</li>
+</ol>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price ) AS tmp 
+GROUP BY spu_id
 </code></pre>
 <blockquote>
-<p>注意：为了避免每次docker-compose 启动之后 ip会发生变化，我这里配置了固定IP，请根据个人实际情况配置，或参阅docker相关文档</p>
+<p>注意：这个方式在低版本中有效。在5.7版本中引入新特性 derived_merge优化过后无效了。</p>
 </blockquote>
-<p>使用命令<code>docker-compose up</code>启动容器</p>
-<h1 id="二-项目配置">二. 项目配置</h1>
-<p>因为对 <code>prometheus</code>的不了解，我直接使用<code>hyperf</code>默认配置</p>
-<ul>
+<p>具体无效原因我们可使用<code>explain</code> 分析</p>
+<pre><code class="language-mysql">EXPLAIN
+SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price) AS tmp 
+GROUP BY spu_id;
+</code></pre>
+<p>如图所示：</p>
+<p><img src="http://img.runrun520.cn/J~~%5DIO91~U0EIZG2%5D4EM%25~A.png" alt="" loading="lazy"><br>
+MySQL 将子查询优化成了一个简单查询，子查询中的排序无效~</p>
+<p>解决方法：</p>
+<ol>
 <li>
-<p>引入组件 <code>composer require hyperf/metric</code></p>
+<p>将derived_merge 关闭</p>
+<p><code>SET optimizer_switch='derived_merge=off';</code></p>
+<p><code>SET GLOBAL optimizer_switch='derived_merge=off';</code></p>
 </li>
 <li>
-<p>发布默认配置文件 <code>php bin/hyperf.php vendor:publish hyperf/metric</code></p>
+<p>使用特殊的查询阻止 <code>derived_merge</code> 优化</p>
+<p>可以通过在子查询中使用任何阻止合并的构造来禁用合并，尽管这些构造对实现的影响不那么明显。防止合并的构造与派生表和视图引用相同：</p>
+<ul>
+<li>聚合函数（<a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_sum"><code>SUM()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_min"><code>MIN()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_max"><code>MAX()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_count"><code>COUNT()</code></a>，等等）</li>
+<li><code>DISTINCT</code></li>
+<li><code>GROUP BY</code></li>
+<li><code>HAVING</code></li>
+<li><code>LIMIT</code></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION</code></a> 要么 <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION ALL</code></a></li>
+<li>选择列表中的子查询</li>
+<li>分配给用户变量</li>
+<li>仅引用文字值（在这种情况下，没有基础表）</li>
+</ul>
 </li>
-<li>
-<p>在<code>config/autoload/dependencies.php</code>中添加对应的Redis存储</p>
-</li>
-</ul>
-<pre><code class="language-php">return [
-    \Prometheus\Storage\Adapter::class =&gt; \Hyperf\Metric\Adapter\Prometheus\RedisStorageFactory::class,
-];
+</ol>
+<p>以上内容参考文档：<a href="https://dev.mysql.com/doc/refman/5.7/en/derived-table-optimization.html">mysql文档</a></p>
+<p>那么我们可以将上面的那条sql语句修改为：</p>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` HAVING 1=1 ORDER BY price   ) AS tmp 
+GROUP BY spu_id;
 </code></pre>
+<p>使用 <code>having</code> 来阻止合并</p>
+<p>那么再用<code>explain</code>看看</p>
+<figure data-type="image" tabindex="1"><img src="http://img.runrun520.cn/QQ%E5%9B%BE%E7%89%8720200911153046.png" alt="image-20200911152244246" loading="lazy"></figure>
 <blockquote>
-<p>在上面的第一篇文章中，老哥说使用<code>swoole_table</code>更高效，我还不知道如何使用，有兴趣的老哥可以自己研究一下。</p>
+<p>如有错误请指正~ 请多包涵</p>
 </blockquote>
-<ul>
-<li>增加中间件<br>
-在<code>config/autoload/middlewares.php</code>文件中增加对应的中间件</li>
-</ul>
-<pre><code class="language-php">return [
-   'http' =&gt; [
-       \Hyperf\Metric\Middleware\MetricMiddleware::class,
-   ],
-];
-</code></pre>
-<ul>
-<li>添加 <code>metrics</code>路由</li>
-</ul>
-<pre><code class="language-php">Router::get('/metrics', function(){
-    $registry = Hyperf\Utils\ApplicationContext::getContainer()-&gt;get(Prometheus\CollectorRegistry::class);
-    $renderer = new Prometheus\RenderTextFormat();
-    return $renderer-&gt;render($registry-&gt;getMetricFamilySamples());
-});
-</code></pre>
-<p>这样对项目的配置就完成了</p>
-<h1 id="三-prometheus的配置">三. prometheus的配置</h1>
-<p>在  <code>prometheus.yml</code>文件中增加对应的配置</p>
-<pre><code class="language-yml">scrape_configs:
-  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.
-  - job_name: 'prometheus'
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
-    static_configs:
-    - targets: ['localhost:9090']
-	
-  - job_name: 'node'
-
-	 # 注意这里的IP需要填写 node-exporter 容器的ip  
-    static_configs:
-    - targets: ['172.18.0.2:9100']
-
-
-  - job_name: 'skeleton'
-    # 这里填写的是宿主机的ip
-    static_configs:
-    - targets: ['10.0.75.1:9502']
-
-</code></pre>
-<p>配置完成之后，再次 <code>dokcer-compose up</code></p>
-<p>访问 http://localhost:9090 查看 <code>prometheus</code></p>
-<figure data-type="image" tabindex="1"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/KCN9pbJlBS.png!large" alt="[Hyperf]  在Hyperf框架中使用prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>如图所示，<code>node</code> 和 <code>skeleton</code> 都已启动</p>
-<h1 id="四-grafana-配置">四. Grafana 配置</h1>
-<p>上面都配置完了，开始配置 <code>Grafana</code><br>
-打开 http://localhost:3000 默认密码是: admin/admin</p>
-<ul>
-<li>新建<code>datasource</code><br>
-左侧边栏 <code>add datasources</code> 选择<code>Prometheus</code></li>
-</ul>
-<figure data-type="image" tabindex="2"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/UJygfIos1n.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<ul>
-<li>配置 <code>datasource</code></li>
-</ul>
-<figure data-type="image" tabindex="3"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/egc52EVNmZ.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<blockquote>
-<p>填写容器的IP:端口</p>
-</blockquote>
-<ul>
-<li>导入<code>hyperf</code>官方的<code>JSON</code>文件</li>
-</ul>
-<figure data-type="image" tabindex="4"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/Aw2cEdBUkx.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>导入之后需要将默认的 <code>app_name</code>改成你自己的<br>
-如：<code>admin-api</code> 就需要填写<code>admin_api</code> 改成下划线形式</p>
-<figure data-type="image" tabindex="5"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/N9a9SnXRyf.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<ul>
-<li>查看监控<br>
-在Home中你就可以看到了</li>
-</ul>
-<figure data-type="image" tabindex="6"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/WOELFeGOo9.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>点进去查看</p>
-<figure data-type="image" tabindex="7"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/e2PWrRa107.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>到此结束，小白第一次配置监控，还有很多东西没弄清楚</p>
 
         </div>
         
-        <div class="prev-post">
-            上一篇
-            <a href="https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/">
-                mysql中 group by排序，derived_merge优化的坑
+        
+        <div class="next-post">
+            下一篇
+            <a href="https://marunrun.github.io/post/hyperf-grafana/">
+                 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
             </a>
         </div>
-        
         
     </div>
     </div>
@@ -595,13 +541,7 @@ services:
     </div>
      
                 <div class="toc-container">
-                    <ul class="markdownIt-TOC">
-<li><a href="#%E4%B8%80-%E4%BD%BF%E7%94%A8docker-compose%E9%83%A8%E7%BD%B2">一. 使用docker-compose部署</a></li>
-<li><a href="#%E4%BA%8C-%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE">二. 项目配置</a></li>
-<li><a href="#%E4%B8%89-prometheus%E7%9A%84%E9%85%8D%E7%BD%AE">三. prometheus的配置</a></li>
-<li><a href="#%E5%9B%9B-grafana-%E9%85%8D%E7%BD%AE">四. Grafana 配置</a></li>
-</ul>
-
+                    
     </div>
     </div>
     </div>
@@ -729,194 +669,141 @@ services:
                 
             </div>
             <div class="postinfo-detail">
-                <div class="postdate"><i class="fa fa-calendar"></i>2020-02-06</div>
-            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 4 min read</div>
+                <div class="postdate"><i class="fa fa-calendar"></i>2020-09-11</div>
+            <div class="poststatus postdate"><i class="fa fa-clock-o"></i> 2 min read</div>
             <div class="posttag">
                 
-                <a href="https://marunrun.github.io/tag/QsSo6IGId/" class="postlink">
-                    <i class="fa fa-tag"></i> PHP
+                <a href="https://marunrun.github.io/tag/Isdsr38FG/" class="postlink">
+                    <i class="fa fa-tag"></i> mysql
                 </a>
                 
             </div>
         </div>
         
         <div id="texttitle" style="text-align: center">
-            <h2> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控</h2>
+            <h2>mysql中 group by排序，derived_merge优化的坑</h2>
             <!-- id 将作为查询条件 -->
-            <div id="pl" style="display:none">https://marunrun.github.io/post/hyperf-grafana/</div>
+            <div id="pl" style="display:none">https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/</div>
             <div id="rootaddr" style="display:none">https://marunrun.github.io</div>
-            <span id="hotnum" class="leancloud_visitors" data-flag-title=" 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控">
+            <span id="hotnum" class="leancloud_visitors" data-flag-title="mysql中 group by排序，derived_merge优化的坑">
                 <h4 class="readercount">热度🔥: <i class="leancloud-visitors-count">loading...</i></h4>
             </span>
         </div>
         <div class="text ">
-            <p>参考： <a href="https://segmentfault.com/a/1190000021443167?utm_source=tag-newest" title="hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示">hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示</a><br>
-<a href="https://doc.hyperf.io/#/zh-cn/metric?id=%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%8a%e6%8a%a5" title="hyperf文档">hyperf文档</a></p>
-<blockquote>
-<p>本文章记录本人的第一次部署所踩的坑，未深入了解prometheus 和grafana 如有不当的地方请指正，谢谢！</p>
-</blockquote>
-<h1 id="一-使用docker-compose部署">一. 使用docker-compose部署</h1>
-<pre><code class="language-yaml">version: '2'
-networks:
-  monitor:
-    driver: bridge
-
-services:
-  prometheus:
-    image: prom/prometheus
-    container_name: prometheus
-    hostname: prometheus
-    restart: always
-    volumes:
-		# 将你的prometheus.yml文件放在当前文件同级下，或自定义
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      #- /home/prometheus/node_down.yml:/etc/prometheus/node_down.yml
-    ports:
-      - &quot;9090:9090&quot;
-    networks:
-      monitor:
-        ipv4_address: 172.18.0.3
-
-  grafana:
-    image: grafana/grafana
-    container_name: grafana
-    hostname: grafana
-    restart: always
-	volumes:
-	# 创建 etc目录，data目录存储grafana的数据
-	- ./etc:/etc/grafana
-	- ./data:/var/lib/grafana
-    ports:
-      - &quot;3000:3000&quot;
-    networks:
-      monitor:
-        ipv4_address: 172.18.0.4
-
-  node-exporter:
-    image: prom/node-exporter
-    container_name: node-exporter
-    hostname: node-exporter
-    restart: always
-    ports:
-      - &quot;9100:9100&quot;
-    networks:
-      monitor:
-        ipv4_address: 172.18.0.2
-
+            <p>一个简单的表</p>
+<pre><code class="language-mysql">CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `spu_id` int(11) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+</code></pre>
+<p>大概内容</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>spu_id</th>
+<th>price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>100</td>
+<td>200</td>
+</tr>
+<tr>
+<td>2</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>200</td>
+<td>400</td>
+</tr>
+<tr>
+<td>4</td>
+<td>200</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<p>对spu_id进行分组，按price从小到大排序：</p>
+<pre><code class="language-mysql">SELECT * FROM `test`  GROUP BY spu_id ORDER BY price
+</code></pre>
+<p>直接使用group by 查出来的数据是按id顺序分组的，并未达到预期</p>
+<ol>
+<li>尝试使用子查询，先排序再分组</li>
+</ol>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price ) AS tmp 
+GROUP BY spu_id
 </code></pre>
 <blockquote>
-<p>注意：为了避免每次docker-compose 启动之后 ip会发生变化，我这里配置了固定IP，请根据个人实际情况配置，或参阅docker相关文档</p>
+<p>注意：这个方式在低版本中有效。在5.7版本中引入新特性 derived_merge优化过后无效了。</p>
 </blockquote>
-<p>使用命令<code>docker-compose up</code>启动容器</p>
-<h1 id="二-项目配置">二. 项目配置</h1>
-<p>因为对 <code>prometheus</code>的不了解，我直接使用<code>hyperf</code>默认配置</p>
-<ul>
+<p>具体无效原因我们可使用<code>explain</code> 分析</p>
+<pre><code class="language-mysql">EXPLAIN
+SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price) AS tmp 
+GROUP BY spu_id;
+</code></pre>
+<p>如图所示：</p>
+<p><img src="http://img.runrun520.cn/J~~%5DIO91~U0EIZG2%5D4EM%25~A.png" alt="" loading="lazy"><br>
+MySQL 将子查询优化成了一个简单查询，子查询中的排序无效~</p>
+<p>解决方法：</p>
+<ol>
 <li>
-<p>引入组件 <code>composer require hyperf/metric</code></p>
+<p>将derived_merge 关闭</p>
+<p><code>SET optimizer_switch='derived_merge=off';</code></p>
+<p><code>SET GLOBAL optimizer_switch='derived_merge=off';</code></p>
 </li>
 <li>
-<p>发布默认配置文件 <code>php bin/hyperf.php vendor:publish hyperf/metric</code></p>
+<p>使用特殊的查询阻止 <code>derived_merge</code> 优化</p>
+<p>可以通过在子查询中使用任何阻止合并的构造来禁用合并，尽管这些构造对实现的影响不那么明显。防止合并的构造与派生表和视图引用相同：</p>
+<ul>
+<li>聚合函数（<a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_sum"><code>SUM()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_min"><code>MIN()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_max"><code>MAX()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_count"><code>COUNT()</code></a>，等等）</li>
+<li><code>DISTINCT</code></li>
+<li><code>GROUP BY</code></li>
+<li><code>HAVING</code></li>
+<li><code>LIMIT</code></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION</code></a> 要么 <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION ALL</code></a></li>
+<li>选择列表中的子查询</li>
+<li>分配给用户变量</li>
+<li>仅引用文字值（在这种情况下，没有基础表）</li>
+</ul>
 </li>
-<li>
-<p>在<code>config/autoload/dependencies.php</code>中添加对应的Redis存储</p>
-</li>
-</ul>
-<pre><code class="language-php">return [
-    \Prometheus\Storage\Adapter::class =&gt; \Hyperf\Metric\Adapter\Prometheus\RedisStorageFactory::class,
-];
+</ol>
+<p>以上内容参考文档：<a href="https://dev.mysql.com/doc/refman/5.7/en/derived-table-optimization.html">mysql文档</a></p>
+<p>那么我们可以将上面的那条sql语句修改为：</p>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` HAVING 1=1 ORDER BY price   ) AS tmp 
+GROUP BY spu_id;
 </code></pre>
+<p>使用 <code>having</code> 来阻止合并</p>
+<p>那么再用<code>explain</code>看看</p>
+<figure data-type="image" tabindex="1"><img src="http://img.runrun520.cn/QQ%E5%9B%BE%E7%89%8720200911153046.png" alt="image-20200911152244246" loading="lazy"></figure>
 <blockquote>
-<p>在上面的第一篇文章中，老哥说使用<code>swoole_table</code>更高效，我还不知道如何使用，有兴趣的老哥可以自己研究一下。</p>
+<p>如有错误请指正~ 请多包涵</p>
 </blockquote>
-<ul>
-<li>增加中间件<br>
-在<code>config/autoload/middlewares.php</code>文件中增加对应的中间件</li>
-</ul>
-<pre><code class="language-php">return [
-   'http' =&gt; [
-       \Hyperf\Metric\Middleware\MetricMiddleware::class,
-   ],
-];
-</code></pre>
-<ul>
-<li>添加 <code>metrics</code>路由</li>
-</ul>
-<pre><code class="language-php">Router::get('/metrics', function(){
-    $registry = Hyperf\Utils\ApplicationContext::getContainer()-&gt;get(Prometheus\CollectorRegistry::class);
-    $renderer = new Prometheus\RenderTextFormat();
-    return $renderer-&gt;render($registry-&gt;getMetricFamilySamples());
-});
-</code></pre>
-<p>这样对项目的配置就完成了</p>
-<h1 id="三-prometheus的配置">三. prometheus的配置</h1>
-<p>在  <code>prometheus.yml</code>文件中增加对应的配置</p>
-<pre><code class="language-yml">scrape_configs:
-  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.
-  - job_name: 'prometheus'
-
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-
-    static_configs:
-    - targets: ['localhost:9090']
-	
-  - job_name: 'node'
-
-	 # 注意这里的IP需要填写 node-exporter 容器的ip  
-    static_configs:
-    - targets: ['172.18.0.2:9100']
-
-
-  - job_name: 'skeleton'
-    # 这里填写的是宿主机的ip
-    static_configs:
-    - targets: ['10.0.75.1:9502']
-
-</code></pre>
-<p>配置完成之后，再次 <code>dokcer-compose up</code></p>
-<p>访问 http://localhost:9090 查看 <code>prometheus</code></p>
-<figure data-type="image" tabindex="1"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/KCN9pbJlBS.png!large" alt="[Hyperf]  在Hyperf框架中使用prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>如图所示，<code>node</code> 和 <code>skeleton</code> 都已启动</p>
-<h1 id="四-grafana-配置">四. Grafana 配置</h1>
-<p>上面都配置完了，开始配置 <code>Grafana</code><br>
-打开 http://localhost:3000 默认密码是: admin/admin</p>
-<ul>
-<li>新建<code>datasource</code><br>
-左侧边栏 <code>add datasources</code> 选择<code>Prometheus</code></li>
-</ul>
-<figure data-type="image" tabindex="2"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/UJygfIos1n.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<ul>
-<li>配置 <code>datasource</code></li>
-</ul>
-<figure data-type="image" tabindex="3"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/egc52EVNmZ.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<blockquote>
-<p>填写容器的IP:端口</p>
-</blockquote>
-<ul>
-<li>导入<code>hyperf</code>官方的<code>JSON</code>文件</li>
-</ul>
-<figure data-type="image" tabindex="4"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/Aw2cEdBUkx.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>导入之后需要将默认的 <code>app_name</code>改成你自己的<br>
-如：<code>admin-api</code> 就需要填写<code>admin_api</code> 改成下划线形式</p>
-<figure data-type="image" tabindex="5"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/N9a9SnXRyf.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<ul>
-<li>查看监控<br>
-在Home中你就可以看到了</li>
-</ul>
-<figure data-type="image" tabindex="6"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/WOELFeGOo9.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>点进去查看</p>
-<figure data-type="image" tabindex="7"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/e2PWrRa107.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
-<p>到此结束，小白第一次配置监控，还有很多东西没弄清楚</p>
 
         </div>
         
-        <div class="prev-post">
-            上一篇
-            <a href="https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/">
-                mysql中 group by排序，derived_merge优化的坑
+        
+        <div class="next-post">
+            下一篇
+            <a href="https://marunrun.github.io/post/hyperf-grafana/">
+                 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
             </a>
         </div>
-        
         
     </div>
     </div>
