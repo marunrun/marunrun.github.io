@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>android逆向 360加固apk，frida Hook java代码 | Marun&#39;s Blog</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636599696029">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="参考文章： https://www.52pojie.cn/forum.php?mod=viewthread&amp;tid=1287307
+书接上文，这次我会尝试apk的逆向，找到app不能抓包的原因
+
+如图所示，这个app被360加固了，..." />
+    <meta name="keywords" content="" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://marunrun.github.io">
+        <img src="https://marunrun.github.io/images/avatar.png?v=1636599696029" class="site-logo">
+        <h1 class="site-title">Marun&#39;s Blog</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://githu.com/marunrun" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://weibo.com/maruna" target="_blank">
+            <i class="fab fa-weibo"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      day day up
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">android逆向 360加固apk，frida Hook java代码</h2>
+            <div class="post-date">2020-11-11</div>
+            
+            <div class="post-content" v-pre>
+              <p>参考文章： https://www.52pojie.cn/forum.php?mod=viewthread&amp;tid=1287307</p>
+<p>书接上文，这次我会尝试apk的逆向，找到app不能抓包的原因<br>
+<img src="https://img-blog.csdnimg.cn/20201111144200883.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+如图所示，这个app被360加固了，几经百度，按照开头那篇文章的参考，我们得到了dex文件</p>
+<p><img src="https://img-blog.csdnimg.cn/20201111144738514.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+将多个dex文件 移动到电脑上<br>
+由于有多个dex文件，我们需要合并查看代码</p>
+<p>jadx工具： https://github.com/skylot/jadx/</p>
+<p>具体代码如下</p>
+<pre><code class="language-python">import os, sys
+# python3.7 merge_dex.py ./file/ livedex
+
+
+if __name__ == &quot;__main__&quot;:
+    if len(sys.argv) &lt; 3 :
+        print(&quot;start error&quot;)
+        sys.exit()
+
+    print(sys.argv[1], sys.argv[2])
+
+path = sys.argv[1] #文件夹目录
+files= os.listdir(path) #得到文件夹下的所有文件名称
+s = []
+for file in files: #遍历文件夹
+    if file.find(&quot;dex&quot;) &gt; 0: ## 查找dex 文件
+        sh = 'jadx.bat -j 1 -r -d ' + sys.argv[2] + &quot; &quot; + path + file
+        print(sh)
+        os.system(sh)
+</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/20201111150210623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+最终结果就是这样了，具体代码就不放了。</p>
+<p>经过查看源码，发现是okHttp设置了no_proxy<br>
+<img src="https://img-blog.csdnimg.cn/20201111150422876.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+只需要将这一部分代码hook掉就ok了。<br>
+我使用的frida  ：https://github.com/frida/frida</p>
+<p>电脑使用pip install</p>
+<pre><code>// 电脑安装frida
+pip install frida-tools # CLI tools
+pip install frida       # Python bindings
+
+// 将frida-server推到手机
+ adb.exe push .\frida-server-14.0.7-android-arm64 /data/local/tmp/frida-server
+
+// 连接到手机
+adb shell
+
+cd /data/local/tmp
+// 切到root用户
+su
+// 修改权限
+chmod 777 frida-server 
+// 执行
+./frida-server
+</code></pre>
+<p>上面就将手机的frida-server开启了，然后在电脑上试试是否可以成功连接</p>
+<pre><code>frida-ps.exe -U
+</code></pre>
+<p>如果有显示手机相关进程就ok</p>
+<p>将自己编写的js代码推到手机 进行 hook</p>
+<pre><code>frida -U --no-pause -f com.showstartfans.activity -l .\showstart.js
+</code></pre>
+<p>showstart.js 代码:</p>
+<pre><code class="language-js">Java.perform(
+    function () {
+        var application = Java.use(&quot;android.app.Application&quot;);
+        application.attach.overload('android.content.Context').implementation = function(context) {
+            var result = this.attach(context); // 先执行原来的attach方法
+            var classloader = context.getClassLoader();
+            Java.classFactory.loader = classloader;
+            var Hook_class = Java.classFactory.use(&quot;com.taihebase.activity.utils.SecurityUtil&quot;);
+
+            console.log(&quot;Hook_class: &quot; + Hook_class);
+            Hook_class.getNeedCapturePacket.implementation = function(){
+                return true;
+            }
+            return result;
+        }
+    }
+)
+</code></pre>
+<blockquote>
+<p>frida关于java的官方文档: https://frida.re/docs/javascript-api/#java</p>
+</blockquote>
+<p>这个时候就可以使用fiddler安心的抓接口了</p>
+<figure data-type="image" tabindex="1"><img src="https://img-blog.csdnimg.cn/2020111115231745.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"></figure>
+<p>故技重施~  又可以流畅的下单购票了。</p>
+
+            </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://marunrun.github.io/post/fiddler-shi-zhan-yi/">
+                  <h3 class="post-title">
+                    fiddler-实战 一
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: '26fc5fd105a751889dba',
+        clientSecret: 'cd035906e5b7ec76b4d985da49b74c739ba3780b',
+        repo: 'marunrun.github.io',
+        owner: 'marunrun',
+        admin: ['marunrun'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>gitlab-ci/cd | Marun&#39;s Blog</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636599696029">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+
+
+    <meta name="description" content="官方文档： GitLab CI/CD
+没有比官方文档更好不过的教程了！
+
+gitlab-ci如何运行？
+gitlab-ci并不是平白无故运行起来的，依托于一个叫做GitLab Runner 的东西，我们配置的gitlab-ci 才会顺利的运..." />
+    <meta name="keywords" content="ci/cd" />
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://marunrun.github.io">
+        <img src="https://marunrun.github.io/images/avatar.png?v=1636599696029" class="site-logo">
+        <h1 class="site-title">Marun&#39;s Blog</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="/post/about" class="site-nav">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+          <a class="social-link" href="https://githu.com/marunrun" target="_blank">
+            <i class="fab fa-github"></i>
+          </a>
+        
+      
+        
+      
+        
+          <a class="social-link" href="https://weibo.com/maruna" target="_blank">
+            <i class="fab fa-weibo"></i>
+          </a>
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      day day up
+    </div>
+    <div class="site-footer">
+      Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> | <a class="rss" href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">gitlab-ci/cd</h2>
+            <div class="post-date">2021-11-11</div>
+            
+            <div class="post-content" v-pre>
+              <p>官方文档： <a href="https://docs.gitlab.com/ee/ci/">GitLab CI/CD</a></p>
+<p>没有比官方文档更好不过的教程了！</p>
+<hr>
+<h2 id="gitlab-ci如何运行">gitlab-ci如何运行？</h2>
+<p><code>gitlab-ci</code>并不是平白无故运行起来的，依托于一个叫做<a href="https://docs.gitlab.com/runner/">GitLab Runner</a> 的东西，我们配置的gitlab-ci 才会顺利的运行。</p>
+<p>如果你对<a href="https://docs.gitlab.com/runner/install/">Install GitLab Runner </a>感兴趣，可以参看文档，gitlab-runner是如何安装的。</p>
+<p><code>ci/cd</code>的运行 至少需要一个<code>gitlab-runner</code>。当然也可以配置多个，比如您可以在<code>macos</code>系统上安装<code>gitlab-runner</code>并注册到<code>gitlab</code>中，这样您就可以将类似ios打包的过程放到这个runner上了。以此类推，如果您有特殊要求的ci/cd，可以指定特殊的runner。</p>
+<h3 id="cicd运行过程">ci/cd运行过程：</h3>
+<p><code>gitlab</code>按照您项目中的的<code>gitlab-ci.yaml</code>配置，创建一个或多个job,然后等待gitlab-runner运行这些job。</p>
+<p>大概的过程类似于：</p>
+<ol>
+<li>
+<p>选择一个执行器</p>
+<p>也就是执行命令等操作的环境，需要<code>gitlab-runner</code>中配置。例如<code>shell</code>也就是在<code>gitlab-runner</code>主机上运行。<code>docker</code>就是拉取某个镜像，在镜像中执行命令。</p>
+<p><strong>下文的runner的执行器均为docker</strong></p>
+</li>
+<li>
+<p>拉取源码</p>
+</li>
+<li>
+<p>重建缓存</p>
+<p>如果当前<code>job</code>或者流水线有配置缓存，会拉取缓存。（下文详细说）</p>
+</li>
+<li>
+<p>下载artifacts</p>
+<p>如果当前job的上游有配置<code>artifacts</code>，会下载<code>artifacts</code>（下文详细说）</p>
+</li>
+<li>
+<p>执行命令</p>
+<p>执行您的<code>scripts</code></p>
+</li>
+</ol>
+<h2 id="cicd-pipelines"><a href="https://docs.gitlab.com/ee/ci/pipelines/">CI/CD pipelines </a> 流水线</h2>
+<p>顾名思义，流水线 ，也就是定义整个流程需要完成哪些阶段，每个阶段需要做什么。</p>
+<ul>
+<li>
+<p>Stages 阶段： 定义了整个<code>pipelines</code>需要做哪些事，这些事需要顺序执行。 例如：先下载依赖，然后编译代码，再推送编译后的代码，最后发一个ci/cd成功的通知</p>
+</li>
+<li>
+<p>Jobs 作业： 每个阶段需要完成的操作，例如：使用某个php镜像，执行composer install 命令下载依赖。</p>
+</li>
+</ul>
+<p>以下为<a href="https://docs.gitlab.com/ee/ci/pipelines/pipeline_architectures.html#basic-pipelines">官方示例</a>为例：</p>
+<pre><code class="language-yaml">stages: # 阶段
+  - build
+  - test
+  - deploy
+
+image: alpine
+
+# 作业
+build_a:
+  stage: build
+  script:
+    - echo &quot;This job builds something.&quot;
+
+build_b:
+  stage: build
+  script:
+    - echo &quot;This job builds something else.&quot;
+
+test_a:
+  stage: test
+  script:
+    - echo &quot;This job tests something. It will only run when all jobs in the&quot;
+    - echo &quot;build stage are complete.&quot;
+
+test_b:
+  stage: test
+  script:
+    - echo &quot;This job tests something else. It will only run when all jobs in the&quot;
+    - echo &quot;build stage are complete too. It will start at about the same time as test_a.&quot;
+
+deploy_a:
+  stage: deploy
+  script:
+    - echo &quot;This job deploys something. It will only run when all jobs in the&quot;
+    - echo &quot;test stage complete.&quot;
+
+deploy_b:
+  stage: deploy
+  script:
+    - echo &quot;This job deploys something else. It will only run when all jobs in the&quot;
+    - echo &quot;test stage complete. It will start at about the same time as deploy_a.&quot;
+</code></pre>
+<blockquote>
+<p>对于更多内容，可参考官方文档</p>
+</blockquote>
+<h2 id="jobs"><a href="https://docs.gitlab.com/ee/ci/jobs/">Jobs </a> 作业</h2>
+<p>作业才是流水线每个阶段实际执行的内容，每个作业都应该定义在顶级，并且拥有至少一个<code>script</code>。</p>
+<blockquote>
+<p>您可以理解为流水线的工人</p>
+</blockquote>
+<p>以官方文档为例：</p>
+<pre><code class="language-yaml">job1: # 作业的名称
+  script: &quot;execute-script-for-job1&quot; # 作业执行的脚本
+
+job2: # 作业的名称
+  script: &quot;execute-script-for-job2&quot; # 作业执行的脚本
+</code></pre>
+<p>作业定义的数量不受限制，每个作业都是独立的单独运行。</p>
+<p>⚠️ 每个作业都是单独，独立运行。所以，即使在同一个流水线中 也就是在一次<code>ci/cd</code>中。每个作业运行的<code>runner</code>都可能是不同的。</p>
+<p>例如：你在runner1 上拉取了依赖，你在runner2上编译了代码，你在runner3上发送了一个通知。</p>
+<p>那么，如果在<code>deploy</code>时想使用上一个阶段编译出来的文件该如何操作呢？</p>
+<h2 id="caching-artifacts"><a href="https://docs.gitlab.com/ee/ci/caching/">Caching / Artifacts</a> 缓存和制品</h2>
+<p><a href="https://docs.gitlab.com/ee/ci/yaml/index.html#artifacts">Artifacts</a> 制品，可以理解为作业产出的内容（上个流水线工人产出的内容）</p>
+<p>简单以下面这个为例：</p>
+<pre><code class="language-yaml">stages:
+  - install
+  - build
+  - deploy
+
+install-online:
+  stage: install
+  image: tool/yarn:v1
+  script:
+    - yarn install
+    - yarn build:prod 
+   # 将yarn build 打包出来的dist 作为制品，传到下一个job
+  artifacts:
+    paths:
+      - dist/
+
+# 默认情况下，后面阶段的作业会自动下载由前面阶段的作业创建的所有制品。
+build-online-image:
+  stage: build
+  image: tool/docker:latest
+  only:
+    - master
+  script:
+    - docker build -t $ONLIE_IMAGE_NAME .
+    - docker push $ONLIE_IMAGE_NAME
+    - docker tag $ONLIE_IMAGE_NAME $IMAGE
+    - docker push $IMAGE
+    
+deploy-online:
+  stage: deploy
+  image: kubematrix/cli:v1
+  # 如果您不需要依赖任何的制品，你可以使用dependencies: []
+  dependencies: []
+  only:
+    - master
+  script:
+    - matrix workloads deploy
+
+</code></pre>
+<p>在<code>install</code>时安装依赖并打包出一个<code>dist</code>文件夹，使用<code>artifacts</code>将这个文件夹打包出来。</p>
+<p>在<code>install</code>执行完成后，<code>build</code>阶段时会自动下载之前的<code>artifacts</code> 也就是<code>dist</code>文件夹，完成了将上个阶段编译出来的文件带到下个阶段的操作。</p>
+<blockquote>
+<p><a href="https://docs.gitlab.com/ee/ci/yaml/index.html#dependencies"> dependencies</a>  依赖 可参考官方文档，</p>
+</blockquote>
+<hr>
+<p><a href="https://docs.gitlab.com/ee/ci/yaml/index.html#cache">Cache</a> 缓存</p>
+<p>以php为例:</p>
+<pre><code class="language-yaml">#
+# https://gitlab.com/gitlab-org/gitlab/-/tree/master/lib/gitlab/ci/templates/PHP.gitlab-ci.yml
+#
+image: php:7.2
+
+# Cache libraries in between jobs
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - vendor/
+
+before_script:
+  # Install and run Composer
+  - curl --show-error --silent &quot;https://getcomposer.org/installer&quot; | php
+  - php composer.phar install
+
+test:
+  script:
+    - vendor/bin/phpunit --configuration phpunit.xml --coverage-text --colors=never
+</code></pre>
+<p>以<code>$CI_COMMIT_REF_SLUG</code>(预定义变量，这里是指分支的名称)为key， 将<code>vendor/</code>目录缓存下来。</p>
+<p>缓存下来 以后的每一次作业，都会下载缓存，这样会加速<code>composer install</code> 的速度</p>
+<p>⚠️需要注意的点：</p>
+<ul>
+<li>
+<p><code>cache:key</code>  如果不指定key，那么默认同一个项目的所有build共享这个缓存。关于<code>cache:key</code>的各种场景使用，可参考：<a href="https://docs.gitlab.com/ee/ci/caching/#common-use-cases-for-caches">Caching in GitLab CI/CD | GitLab</a></p>
+</li>
+<li>
+<p>默认cache使用本地磁盘保存，但这样会出现一个问题。如果每次<code>job</code>运行都在不同的<code>runner</code>上，那么缓存是不可以共享的。这时候就需要引入一个分布式存储这个缓存文件。</p>
+</li>
+</ul>
+<h3 id="配置阿里云oss存储cache文件">配置阿里云OSS存储cache文件</h3>
+<p><a href="https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runnerscaches3-section">Advanced configuration | GitLab</a></p>
+<p>为了统一缓存，我们需要使用OSS</p>
+<p>首先进入<code>gitlab-runner</code>对应的主机，<code>gitlab-runner list</code> 查看配置文件存放的位置</p>
+<p><code>/etc/gitlab-runner/config.toml</code></p>
+<pre><code class="language-toml">[[runners]]
+  name = &quot;cloud5&quot;
+  url = &quot;https://gitlab.xxx.cn/&quot;
+  token = &quot;token&quot;
+  executor = &quot;docker&quot;
+  [runners.custom_build_dir]
+  [runners.cache]
+    Type = &quot;s3&quot;
+    Shared = true
+    Path = &quot;xxx&quot;
+    [runners.cache.s3]
+      ServerAddress = &quot;oss-cn-hangzhou.aliyuncs.com&quot;
+      AccessKey = &quot;key&quot;
+      SecretKey = &quot;sec&quot;
+      BucketName = &quot;gitlab-runner-cached&quot;
+      BucketLocation = &quot;oss-cn-hangzhou&quot;
+  [runners.docker]
+    tls_verify = false
+    image = &quot;ruby:2.6&quot;
+    privileged = false
+    disable_entrypoint_overwrite = false
+    oom_kill_disable = false
+    disable_cache = false
+    volumes = [&quot;/var/run/docker.sock:/var/run/docker.sock&quot;, &quot;/root/.docker/:/root/.docker/&quot;, &quot;/data/gitlab-runner/cache:/cache&quot;, &quot;/data/gitlab-runner/npm-cache:/root/.npm&quot;, &quot;/data/gitlab-runner/composer-cache:/root/.composer&quot;]
+    shm_size = 0
+    pull_policy = &quot;if-not-present&quot;
+</code></pre>
+<p>主要内容为以下：</p>
+<pre><code class="language-yaml">  [runners.cache]
+    Type = &quot;s3&quot; # 缓存类型
+    Shared = true # 缓存在多个runner之间共享
+    Path = &quot;xxx&quot; # 缓存路径前缀，如果一个gitlab-runner在多个gitlab中注册，可以使用前缀的方式做区分
+    [runners.cache.s3]
+      ServerAddress = &quot;oss-cn-hangzhou.aliyuncs.com&quot; # oss地址
+      AccessKey = &quot;key&quot; # key
+      SecretKey = &quot;sec&quot; # secret
+      BucketName = &quot;gitlab-runner-cached&quot; # bucketName
+      BucketLocation = &quot;oss-cn-hangzhou&quot; # BucketLocation
+</code></pre>
+<p>以此类推，你需要在所有的gitlab-runner中配置此缓存，这样所有的缓存都会被上传到阿里云的OSS中，无论你的job运行在哪个runner中。</p>
+<h2 id="示例">示例：</h2>
+<p>以一个前端项目为例：</p>
+<pre><code class="language-yaml"># 定义
+variables:
+  ONLIE_IMAGE_NAME: registry.cn-hangzhou.aliyuncs.com/$CI_PROJECT_NAME:$CI_COMMIT_SHORT_SHA
+
+stages:
+  - preInstall
+  - install
+  - build
+  - deploy
+
+
+build-image:
+  stage: build
+  image: docker
+  only:
+    - test
+  script:
+    - docker build -t $IMAGE .
+    - docker push $IMAGE
+
+
+
+#  ---------------------------------- master ----------------------------------
+# 只有当package.json变化时才会重新install
+preInstall-job:
+  stage: preInstall
+  image: yarn:v1
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
+      - yarn.lock
+    # 只需要推送缓存，不需要拉取缓存
+    policy: push
+  only:
+    refs:
+      - master
+    changes:
+      - package.json
+  script:
+    - yarn install 
+
+
+install-online:
+  stage: install
+  image: yarn:v1
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
+      - yarn.lock
+    # 只需要拉取缓存，不需要推送缓存
+    policy: pull
+  only:
+    - master
+  script:
+  # 当缓存存在时不需要install
+    - if [ ! -d &quot;./node_modules/&quot; ];then   yarn install;   else   ls -alh; fi
+    - yarn build:prod 
+  # 打包制品给后面的job
+  artifacts:
+    paths:
+      - dist/
+
+build-online-image:
+  stage: build
+  # 使用docker镜像
+  image: docker:latest
+  # 只在master分支变动时运行这个job
+  only:
+    - master
+  script:
+    - docker build -t $ONLIE_IMAGE_NAME . # 构建镜像
+    - docker push $ONLIE_IMAGE_NAME # 推送镜像
+
+deploy-online:
+  stage: deploy
+  # 使用kubematrix-cli镜像
+  image: kubematrix/cli:v1
+  # 依赖为空，表示不需要任何的依赖
+  dependencies: []
+  only:
+    - master
+  script:
+    - matrix workloads deploy
+
+</code></pre>
+<h3 id="示例讲解">示例讲解</h3>
+<ol>
+<li>
+<p><a href="https://docs.gitlab.com/ee/ci/variables/">GitLab CI/CD variables | GitLab</a>   变量</p>
+<blockquote>
+<p>可以在文档<a href="https://docs.gitlab.com/ee/ci/variables/predefined_variables.html">Predefined variables reference | GitLab</a>  中查看预定义的变量</p>
+</blockquote>
+<p>首先定义变量 ONLIE_IMAGE_NAME 以供使用</p>
+</li>
+<li>
+<p>定义stages 流水线阶段</p>
+<p>定义了4个阶段，preInstall，install，build，deploy，下面的job将按照关联的stag顺序执行</p>
+</li>
+<li>
+<p>定义job</p>
+<p><code>stag</code> 定义了job对应的阶段。</p>
+<p><code>image</code>：定义了执行脚本所使用的docker镜像。</p>
+<p><a href="https://docs.gitlab.com/ee/ci/yaml/index.html#only--except">only</a> ： 定义了job只在某些情况下执行。默认为<code>only.refs</code>输入分支名，或与分支相匹配的正则表达式。<code>only.changes</code> 检测只在某些文件变动时运行。</p>
+<p><code>cache</code> ： 定义了改job使用缓存，<code>cache.policy</code> 缓存规则，默认为<code>pull-push</code>开始<code>job</code>前拉取缓存,<code>job</code>成功后推送缓存。 可修改为<code>push</code>只推送，不拉取。<code>pull</code>只拉取，不推送</p>
+<p><code>artifacts</code>： 定义了需要打包的制品，给后面的job使用</p>
+<p><code>dependencies</code> : 需要的依赖，如果上面的job有<code>artifacts</code> 会默认下载，如果不需要<code>artifacts</code> 可将这个属性定义为空数组</p>
+</li>
+</ol>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://marunrun.github.io/tag/CEjTjeW6c/" class="tag">
+                    ci/cd
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://marunrun.github.io/post/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma/">
+                  <h3 class="post-title">
+                    android逆向 360加固apk，frida Hook java代码
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+<script type="application/javascript">
+
+AOS.init();
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: '26fc5fd105a751889dba',
+        clientSecret: 'cd035906e5b7ec76b4d985da49b74c739ba3780b',
+        repo: 'marunrun.github.io',
+        owner: 'marunrun',
+        admin: ['marunrun'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
