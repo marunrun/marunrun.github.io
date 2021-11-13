@@ -1,0 +1,254 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>fiddler-实战  | Marun&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636816255894">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1636816255894"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    fiddler-实战 
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-11-10 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <p>前言：<br>
+前段时间看了一档B站的综艺：《说唱新世代》，最近节目里面的选手开始巡演。想买票去看看的，在秀动上没买到票，很气。so，想想办法吧，于是有了以下记录。</p>
+<p>一，尝试APP抓包看看<br>
+抓包工具：<a href="https://www.telerik.com/fiddler">Fiddler</a><br>
+具体配置不再赘述，网上有很多文章都有讲<br>
+App配置wifi代理8888<br>
+很可惜，App并没有成功，只抓到几张图片的😭<br>
+<img src="https://img-blog.csdnimg.cn/img_convert/907e51e6966309c2c72e4c3433d89771.png" alt="" loading="lazy"></p>
+<p>二，尝试wap端<br>
+既然App端不可以的话，那就尝试一下wap端吧。<br>
+<img src="https://img-blog.csdnimg.cn/img_convert/1f35835101beb10003a20934e613faec.png" alt="" loading="lazy"></p>
+<p>呐，这里显示只能去app购买，可恶😤，右键检查一下。<br>
+<img src="https://img-blog.csdnimg.cn/20201110142801726.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+这里加入了一个id，扒下js，detail.js<br>
+<img src="https://img-blog.csdnimg.cn/20201110143214344.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+这里判断了<code>activity.type == 6</code> ，看下接口，哪里有type : 6的<br>
+<img src="https://img-blog.csdnimg.cn/20201110143355113.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+呐，不出意外就是这里了，我们使用fillder 拦截response ，修改这个type<br>
+<img src="https://img-blog.csdnimg.cn/20201110143615947.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+第一步，双击这玩意儿，开启response拦截功能 （注意这里会拦截所有的response，在没有抓到你想要的接口时，先点上面的go 放行所有的请求，直到你想要的接口出现）<br>
+第二步，搜到想要修改的值，我这里就是<code>&quot;type&quot;:6</code> 改为type:1<br>
+第三步，修改成功后点击这个<code>run to xxxx</code>的绿色按钮，再把第一步这里还原就行</p>
+<p>好了，来看看现在的页面</p>
+<p><img src="https://img-blog.csdnimg.cn/20201110144038726.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+从只能app购买，变成了立即购票 nice，兄弟。第一步完成了<br>
+我们点击立即购票<br>
+<img src="https://img-blog.csdnimg.cn/20201110144124502.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+可惜这里显示即将开售，我们来看看这个地方的接口<br>
+<img src="https://img-blog.csdnimg.cn/20201110144454967.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+这里我们故技重施，把这里的0 都改成10， 注意这里的salesStatus也需要改成1<br>
+<img src="https://img-blog.csdnimg.cn/2020111014483361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+呐，这里就可以直接点立即购买了,点进去就下单页了。<br>
+<img src="https://img-blog.csdnimg.cn/20201110144914959.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+这里的已售罄其实也可以改，同样通过fiddler 改接口，我就不再演示了。</p>
+<p>by the way , 这里如果直接进来的话，其实直接通过url下次再进来了，就不用前面的几步操作了，链接放下面</p>
+<p>https://wap.showstart.com/pages/order/activity/confirm/confirm?sequence=123744&amp;ticketId=2d80ca0d806844cba6915518356f76c6&amp;ticketNum=1</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://marunrun.github.io/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/" class="post-title gt-a-link">
+                    mysql中 group by排序，derived_merge优化的坑
+                </a>
+            </div>
+        
+
+        
+            <span id="/fiddler-shi-zhan-yi//" class="leancloud_visitors" data-flag-title="fiddler-实战 ">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

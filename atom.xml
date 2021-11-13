@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://marunrun.github.io</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2021-11-11T03:38:00.319Z</updated>
+    <updated>2021-11-13T15:10:58.341Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://marunrun.github.io"/>
     <link rel="self" href="https://marunrun.github.io/atom.xml"/>
@@ -12,36 +12,40 @@
     <rights>All rights reserved 2021, Marun&apos;s Blog</rights>
     <entry>
         <title type="html"><![CDATA[gitlab-ci/cd]]></title>
-        <id>https://marunrun.github.io/post/gitlab-cicd/</id>
-        <link href="https://marunrun.github.io/post/gitlab-cicd/">
+        <id>https://marunrun.github.io/gitlab-cicd/</id>
+        <link href="https://marunrun.github.io/gitlab-cicd/">
         </link>
         <updated>2021-11-11T02:56:06.000Z</updated>
+        <summary type="html"><![CDATA[<p>简单介绍gitlab-ci/cd的使用</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>简单介绍gitlab-ci/cd的使用</p>
+]]></content>
     </entry>
     <entry>
         <title type="html"><![CDATA[android逆向 360加固apk，frida Hook java代码]]></title>
-        <id>https://marunrun.github.io/post/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma/</id>
-        <link href="https://marunrun.github.io/post/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma/">
+        <id>https://marunrun.github.io/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma/</id>
+        <link href="https://marunrun.github.io/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma/">
         </link>
         <updated>2020-11-11T07:19:07.000Z</updated>
     </entry>
     <entry>
-        <title type="html"><![CDATA[fiddler-实战 一]]></title>
-        <id>https://marunrun.github.io/post/fiddler-shi-zhan-yi/</id>
-        <link href="https://marunrun.github.io/post/fiddler-shi-zhan-yi/">
+        <title type="html"><![CDATA[fiddler-实战 ]]></title>
+        <id>https://marunrun.github.io/fiddler-shi-zhan-yi/</id>
+        <link href="https://marunrun.github.io/fiddler-shi-zhan-yi/">
         </link>
         <updated>2020-11-10T06:12:25.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[mysql中 group by排序，derived_merge优化的坑]]></title>
-        <id>https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/</id>
-        <link href="https://marunrun.github.io/post/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/">
+        <id>https://marunrun.github.io/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/</id>
+        <link href="https://marunrun.github.io/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/">
         </link>
         <updated>2020-09-11T07:23:21.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[ 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控]]></title>
-        <id>https://marunrun.github.io/post/hyperf-grafana/</id>
-        <link href="https://marunrun.github.io/post/hyperf-grafana/">
+        <id>https://marunrun.github.io/hyperf-grafana/</id>
+        <link href="https://marunrun.github.io/hyperf-grafana/">
         </link>
         <updated>2020-02-05T16:00:00.000Z</updated>
     </entry>

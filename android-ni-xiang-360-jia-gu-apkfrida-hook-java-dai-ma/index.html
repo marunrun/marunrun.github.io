@@ -1,0 +1,304 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>android逆向 360加固apk，frida Hook java代码 | Marun&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636816255894">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1636816255894"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    android逆向 360加固apk，frida Hook java代码
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-11-11 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <p>参考文章： https://www.52pojie.cn/forum.php?mod=viewthread&amp;tid=1287307</p>
+<p>书接上文，这次我会尝试apk的逆向，找到app不能抓包的原因<br>
+<img src="https://img-blog.csdnimg.cn/20201111144200883.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+如图所示，这个app被360加固了，几经百度，按照开头那篇文章的参考，我们得到了dex文件</p>
+<p><img src="https://img-blog.csdnimg.cn/20201111144738514.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+将多个dex文件 移动到电脑上<br>
+由于有多个dex文件，我们需要合并查看代码</p>
+<p>jadx工具： https://github.com/skylot/jadx/</p>
+<p>具体代码如下</p>
+<pre><code class="language-python">import os, sys
+# python3.7 merge_dex.py ./file/ livedex
+
+
+if __name__ == &quot;__main__&quot;:
+    if len(sys.argv) &lt; 3 :
+        print(&quot;start error&quot;)
+        sys.exit()
+
+    print(sys.argv[1], sys.argv[2])
+
+path = sys.argv[1] #文件夹目录
+files= os.listdir(path) #得到文件夹下的所有文件名称
+s = []
+for file in files: #遍历文件夹
+    if file.find(&quot;dex&quot;) &gt; 0: ## 查找dex 文件
+        sh = 'jadx.bat -j 1 -r -d ' + sys.argv[2] + &quot; &quot; + path + file
+        print(sh)
+        os.system(sh)
+</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/20201111150210623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+最终结果就是这样了，具体代码就不放了。</p>
+<p>经过查看源码，发现是okHttp设置了no_proxy<br>
+<img src="https://img-blog.csdnimg.cn/20201111150422876.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"><br>
+只需要将这一部分代码hook掉就ok了。<br>
+我使用的frida  ：https://github.com/frida/frida</p>
+<p>电脑使用pip install</p>
+<pre><code>// 电脑安装frida
+pip install frida-tools # CLI tools
+pip install frida       # Python bindings
+
+// 将frida-server推到手机
+ adb.exe push .\frida-server-14.0.7-android-arm64 /data/local/tmp/frida-server
+
+// 连接到手机
+adb shell
+
+cd /data/local/tmp
+// 切到root用户
+su
+// 修改权限
+chmod 777 frida-server 
+// 执行
+./frida-server
+</code></pre>
+<p>上面就将手机的frida-server开启了，然后在电脑上试试是否可以成功连接</p>
+<pre><code>frida-ps.exe -U
+</code></pre>
+<p>如果有显示手机相关进程就ok</p>
+<p>将自己编写的js代码推到手机 进行 hook</p>
+<pre><code>frida -U --no-pause -f com.showstartfans.activity -l .\showstart.js
+</code></pre>
+<p>showstart.js 代码:</p>
+<pre><code class="language-js">Java.perform(
+    function () {
+        var application = Java.use(&quot;android.app.Application&quot;);
+        application.attach.overload('android.content.Context').implementation = function(context) {
+            var result = this.attach(context); // 先执行原来的attach方法
+            var classloader = context.getClassLoader();
+            Java.classFactory.loader = classloader;
+            var Hook_class = Java.classFactory.use(&quot;com.taihebase.activity.utils.SecurityUtil&quot;);
+
+            console.log(&quot;Hook_class: &quot; + Hook_class);
+            Hook_class.getNeedCapturePacket.implementation = function(){
+                return true;
+            }
+            return result;
+        }
+    }
+)
+</code></pre>
+<blockquote>
+<p>frida关于java的官方文档: https://frida.re/docs/javascript-api/#java</p>
+</blockquote>
+<p>这个时候就可以使用fiddler安心的抓接口了</p>
+<figure data-type="image" tabindex="1"><img src="https://img-blog.csdnimg.cn/2020111115231745.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTMwMzIzNDU=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" loading="lazy"></figure>
+<p>故技重施~  又可以流畅的下单购票了。</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://marunrun.github.io/fiddler-shi-zhan-yi/" class="post-title gt-a-link">
+                    fiddler-实战 
+                </a>
+            </div>
+        
+
+        
+            <span id="/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma//" class="leancloud_visitors" data-flag-title="android逆向 360加固apk，frida Hook java代码">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,372 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title> 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控 | Marun&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636816255894">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1636816255894"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                     在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-02-06 ·
+                    </time>
+                    
+                        <a href="https://marunrun.github.io/QsSo6IGId/" class="post-tags">
+                            # PHP
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>参考： <a href="https://segmentfault.com/a/1190000021443167?utm_source=tag-newest" title="hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示">hyperf利用prometheus接入服务监控,使用grafana实现数据的实时监控显示</a><br>
+<a href="https://doc.hyperf.io/#/zh-cn/metric?id=%e8%87%aa%e5%ae%9a%e4%b9%89%e4%b8%8a%e6%8a%a5" title="hyperf文档">hyperf文档</a></p>
+<blockquote>
+<p>本文章记录本人的第一次部署所踩的坑，未深入了解prometheus 和grafana 如有不当的地方请指正，谢谢！</p>
+</blockquote>
+<h1 id="一-使用docker-compose部署">一. 使用docker-compose部署</h1>
+<pre><code class="language-yaml">version: '2'
+networks:
+  monitor:
+    driver: bridge
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    restart: always
+    volumes:
+		# 将你的prometheus.yml文件放在当前文件同级下，或自定义
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      #- /home/prometheus/node_down.yml:/etc/prometheus/node_down.yml
+    ports:
+      - &quot;9090:9090&quot;
+    networks:
+      monitor:
+        ipv4_address: 172.18.0.3
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    hostname: grafana
+    restart: always
+	volumes:
+	# 创建 etc目录，data目录存储grafana的数据
+	- ./etc:/etc/grafana
+	- ./data:/var/lib/grafana
+    ports:
+      - &quot;3000:3000&quot;
+    networks:
+      monitor:
+        ipv4_address: 172.18.0.4
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    hostname: node-exporter
+    restart: always
+    ports:
+      - &quot;9100:9100&quot;
+    networks:
+      monitor:
+        ipv4_address: 172.18.0.2
+
+</code></pre>
+<blockquote>
+<p>注意：为了避免每次docker-compose 启动之后 ip会发生变化，我这里配置了固定IP，请根据个人实际情况配置，或参阅docker相关文档</p>
+</blockquote>
+<p>使用命令<code>docker-compose up</code>启动容器</p>
+<h1 id="二-项目配置">二. 项目配置</h1>
+<p>因为对 <code>prometheus</code>的不了解，我直接使用<code>hyperf</code>默认配置</p>
+<ul>
+<li>
+<p>引入组件 <code>composer require hyperf/metric</code></p>
+</li>
+<li>
+<p>发布默认配置文件 <code>php bin/hyperf.php vendor:publish hyperf/metric</code></p>
+</li>
+<li>
+<p>在<code>config/autoload/dependencies.php</code>中添加对应的Redis存储</p>
+</li>
+</ul>
+<pre><code class="language-php">return [
+    \Prometheus\Storage\Adapter::class =&gt; \Hyperf\Metric\Adapter\Prometheus\RedisStorageFactory::class,
+];
+</code></pre>
+<blockquote>
+<p>在上面的第一篇文章中，老哥说使用<code>swoole_table</code>更高效，我还不知道如何使用，有兴趣的老哥可以自己研究一下。</p>
+</blockquote>
+<ul>
+<li>增加中间件<br>
+在<code>config/autoload/middlewares.php</code>文件中增加对应的中间件</li>
+</ul>
+<pre><code class="language-php">return [
+   'http' =&gt; [
+       \Hyperf\Metric\Middleware\MetricMiddleware::class,
+   ],
+];
+</code></pre>
+<ul>
+<li>添加 <code>metrics</code>路由</li>
+</ul>
+<pre><code class="language-php">Router::get('/metrics', function(){
+    $registry = Hyperf\Utils\ApplicationContext::getContainer()-&gt;get(Prometheus\CollectorRegistry::class);
+    $renderer = new Prometheus\RenderTextFormat();
+    return $renderer-&gt;render($registry-&gt;getMetricFamilySamples());
+});
+</code></pre>
+<p>这样对项目的配置就完成了</p>
+<h1 id="三-prometheus的配置">三. prometheus的配置</h1>
+<p>在  <code>prometheus.yml</code>文件中增加对应的配置</p>
+<pre><code class="language-yml">scrape_configs:
+  # The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+    - targets: ['localhost:9090']
+	
+  - job_name: 'node'
+
+	 # 注意这里的IP需要填写 node-exporter 容器的ip  
+    static_configs:
+    - targets: ['172.18.0.2:9100']
+
+
+  - job_name: 'skeleton'
+    # 这里填写的是宿主机的ip
+    static_configs:
+    - targets: ['10.0.75.1:9502']
+
+</code></pre>
+<p>配置完成之后，再次 <code>dokcer-compose up</code></p>
+<p>访问 http://localhost:9090 查看 <code>prometheus</code></p>
+<figure data-type="image" tabindex="1"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/KCN9pbJlBS.png!large" alt="[Hyperf]  在Hyperf框架中使用prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>如图所示，<code>node</code> 和 <code>skeleton</code> 都已启动</p>
+<h1 id="四-grafana-配置">四. Grafana 配置</h1>
+<p>上面都配置完了，开始配置 <code>Grafana</code><br>
+打开 http://localhost:3000 默认密码是: admin/admin</p>
+<ul>
+<li>新建<code>datasource</code><br>
+左侧边栏 <code>add datasources</code> 选择<code>Prometheus</code></li>
+</ul>
+<figure data-type="image" tabindex="2"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/UJygfIos1n.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<ul>
+<li>配置 <code>datasource</code></li>
+</ul>
+<figure data-type="image" tabindex="3"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/egc52EVNmZ.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<blockquote>
+<p>填写容器的IP:端口</p>
+</blockquote>
+<ul>
+<li>导入<code>hyperf</code>官方的<code>JSON</code>文件</li>
+</ul>
+<figure data-type="image" tabindex="4"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/Aw2cEdBUkx.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>导入之后需要将默认的 <code>app_name</code>改成你自己的<br>
+如：<code>admin-api</code> 就需要填写<code>admin_api</code> 改成下划线形式</p>
+<figure data-type="image" tabindex="5"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/N9a9SnXRyf.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<ul>
+<li>查看监控<br>
+在Home中你就可以看到了</li>
+</ul>
+<figure data-type="image" tabindex="6"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/WOELFeGOo9.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>点进去查看</p>
+<figure data-type="image" tabindex="7"><img src="https://cdn.learnku.com/uploads/images/202003/05/28269/e2PWrRa107.png!large" alt="[Hyperf]  在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控" loading="lazy"></figure>
+<p>到此结束，小白第一次配置监控，还有很多东西没弄清楚</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+
+        
+            <span id="/hyperf-grafana//" class="leancloud_visitors" data-flag-title=" 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

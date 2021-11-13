@@ -1,679 +1,177 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
-    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
-    <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://marunrun.github.io/media/css/live2d.css">
-    <link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
-    <meta name="description" content="day day up" />
-    <title>Marun's Blog</title>
-</head>
-<style>
-    @media screen and (max-width: 1300px) {
-        .archives-content ul li>span {
-            display: none;
-        }
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        .archives-content ul {
-            padding: 0px;
-        }
-    }
-</style>
+<title>友情链接 | Marun&#39;s Blog</title>
 
-<body>
-    <!-- 响应式布局，针对PC端内容显示 -->
-    <div id="content">
-        <div class="nav-large">
-            <div class="row">
-                <div class="side"><head>
-    <meta name="description" content="day day up" />
-    <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
-</head>
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636816255894">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
 
 
-<body>
-    
-
-
-
-    
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://marunrun.github.io"
-                    style="font-size:21px">Marun&#39;s Blog&nbsp;&nbsp;|&nbsp;&nbsp;</a>
-                <a class="navbar-brand" href=""
-                    style="font-size:15px;font-family:kaiti">day day up</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse">
-                
-                <div class="search nav navbar-nav" style="margin-top:8px">
-                    <!-- <input type="text" class="search-input" placeholder="标题搜索(●'◡'●)" /> -->
-                    <input type="text" class="search-input" placeholder="标题搜索 ⚆_⚆ つ♡">
-                    <div class="search-results"></div>
-                </div>
-                
-                <div class="search nav navbar-nav">
-                <a title="text" onclick="document.getElementById('socialMenu').style.display='block'"><i><img class="social"
-                    src="https://marunrun.github.io/media/images/social.png" alt=""></i></a>
-            </div>
-            <ul class="nav navbar-nav" style="float: right;margin-right:5%">
-                
-                
-                <li>
-                    <a href="/" style="color:white">
-                        首页
-                    </a>
-                </li>
-                
-                
-                
-                <li>
-                    <a href="/archives" style="color:white">
-                        归档
-                    </a>
-                </li>
-                
-                
-                
-                <li>
-                    <a href="/tags" style="color:white">
-                        标签
-                    </a>
-                </li>
-                
-                
-                
-                <li>
-                    <a href="/post/about" style="color:white">
-                        关于
-                    </a>
-                </li>
-                
-                
-                
-                  
-                <li><a href="https://marunrun.github.io/friends" style="color:white">友链</a></li>
-                
-                  <li><img src="https://marunrun.github.io/images/avatar.png?v=1600065003945" alt=""
-                class="menutopavatar"></li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
-    <div id="socialMenu" class="modal">
-        <div class="animate">
-            <div class="socialContainer">
-                
-                <a href="https://github.com/marunrun" target="_blank"><i><img class="icon"
-                            src="https://marunrun.github.io/media/images/github.png" alt=""></i></a>
-                
-                
-                <a onclick="showqq()" style="cursor:pointer"><i><img class="icon" src="https://marunrun.github.io/media/images/QQ.png"
-                            alt=""></i></a>
-                
-                
-                
-                
-                
-            </div>
-            <div id="qq" style="display:none">786506342</div>
-        </div>
-    </div>
-    <!-- 引入jQuery核心js文件 -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js"></script>
-    <script>
-        var social = document.getElementById('socialMenu');
-        // 鼠标点击模型外区域关闭登录框
-        window.onclick = function (event) {
-            if (event.target == social) {
-                social.style.display = "none";
-            }
-        }
-    </script>
-    
-</body>
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
 <script>
-    //-------------------------------------------------搜索
-    // 获取搜索框、搜索按钮、清空搜索、结果输出对应的元素
-    var searchInput = document.querySelector('.search-input');
-    var searchResults = document.querySelector('.search-results');
+    window.dataLayer = window.dataLayer || [];
 
-    // 申明保存文章的标题、链接、内容的数组变量
-    var searchValue = '',
-        arrItems = [],
-        arrLinks = [],
-        arrTitles = [],
-        arrResults = [],
-        indexItem = [],
-        itemLength = 0;
-    var tmpDiv = document.createElement('div');
-    tmpDiv.className = 'result-item';
-
-    // ajax 的兼容写法
-    var xhr = new XMLHttpRequest() || new ActiveXObject('Microsoft.XMLHTTP');
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            xml = xhr.responseXML;
-            arrItems = xml.getElementsByTagName('entry');
-            itemLength = arrItems.length;
-            // 遍历并保存所有文章对应的标题、链接、内容到对应的数组中
-            // 同时过滤掉 HTML 标签
-            for (i = 0; i < itemLength; i++) {
-                var link = arrItems[i].getElementsByTagName('link')[0];
-                arrLinks[i] = link.getAttribute("href");
-                arrTitles[i] = arrItems[i].getElementsByTagName('title')[0].
-                childNodes[0].nodeValue.replace(/<.*?>/g, '');
-            }
-        }
+    function gtag() {
+        dataLayer.push(arguments);
     }
 
-    // 开始获取根目录下 feed.xml 文件内的数据
-    xhr.open('get', '/atom.xml', true);
-    xhr.send();
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
 
 
+</head>
 
-    // 输入框内容变化后就开始匹配，可以不用点按钮
-    // 经测试，onkeydown, onchange 等方法效果不太理想，
-    // 存在输入延迟等问题，最后发现触发 input 事件最理想，
-    // 并且可以处理中文输入法拼写的变化
-    searchInput.oninput = function () {
-        setTimeout(searchConfirm, 0);
-    }
-    searchInput.onfocus = function () {
-        searchResults.style.display = 'block';
-    }
-
-    function searchConfirm() {
-        if (searchInput.value == '') {
-            searchResults.style.display = 'none';
-        } else if (searchInput.value.search(/^\s+$/) >= 0) {
-            // 检测输入值全是空白的情况
-            searchInit();
-            var itemDiv = tmpDiv.cloneNode(true);
-            itemDiv.innerText = '请输入有效内容...';
-            searchResults.appendChild(itemDiv);
+<body>
+<div class="main gt-bg-theme-color-first">
+        <div class="main-content">
+            <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1636816255894"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
         } else {
-            // 合法输入值的情况
-            searchInit();
-            searchValue = searchInput.value;
-            // 在标题、内容中查找
-            searchMatching(arrTitles, searchValue);
+            element.style.display = 'none';
         }
     }
-
-    // 每次搜索完成后的初始化
-    function searchInit() {
-        arrResults = [];
-        indexItem = [];
-        searchResults.innerHTML = '';
-        searchResults.style.display = 'block';
-    }
-
-    function searchMatching(arr1, input) {
-        // 忽略输入大小写
-        input = new RegExp(input, 'i');
-        // 在所有文章标题、内容中匹配查询值
-        for (i = 0; i < itemLength; i++) {
-            if (arr1[i].search(input) !== -1) {
-                var arr = arr1;
-                indexItem.push(i); // 保存匹配值的索引
-                var indexContent = arr[i].search(input);
-                // 此时 input 为 RegExp 格式 /input/i，转换为原 input 字符串长度
-                var l = input.toString().length - 3;
-                var step = 10;
-
-                // 将匹配到内容的地方进行黄色标记，并包括周围一定数量的文本
-                arrResults.push(arr[i].slice(indexContent - step, indexContent));
-            }
-        }
-
-        // 输出总共匹配到的数目
-        var totalDiv = tmpDiv.cloneNode(true);
-        totalDiv.innerHTML = '<b>总匹配：' + indexItem.length + ' 项<hr></b>';
-        searchResults.appendChild(totalDiv);
-
-        // 未匹配到内容的情况
-        if (indexItem.length == 0) {
-            var itemDiv = tmpDiv.cloneNode(true);
-            itemDiv.innerText = '未匹配到内容...';
-            searchResults.appendChild(itemDiv);
-        }
-
-        // 将所有匹配内容进行组合
-        for (i = 0; i < arrResults.length; i++) {
-            var itemDiv = tmpDiv.cloneNode(true);
-            itemDiv.innerHTML = '<b>[' + arrTitles[indexItem[i]] +
-                ']</b><p>' + arrResults[i] + "</p><hr />";
-            itemDiv.setAttribute('onclick', 'changeHref(arrLinks[indexItem[' + i + ']])');
-            searchResults.appendChild(itemDiv);
-        }
-    }
-
-    function changeHref(href) {
-        location.href = href;
-    }
-
-    function showqq() {
-        var qq = document.getElementById("qq").innerHTML;
-        if (qq != '')
-            alert("博主的QQ联系方式为：" + qq);
-        else
-            alert("博主暂未设置QQ联系方式");
-    }
-</script></div>
-                <div id="main" class="col-xs-12 col-sm-7" style="z-index: 999;">
-                    
-                       <div style="margin-top:80px"></div>
-                    
-                    <body>
-    <div id="friendscontainermobile">
-        
-        
-        
-    </div>
-
-    <div id="friendscontainer">
-        
-        
-        
-    </div>
-</body>
-                    <div name="comment" style="background: white">
-                        <div class="commentcontainer">
-                            
-                            <head>
-    <script src='https://marunrun.github.io/media/js/valine.min.js'></script>
-    <script src="https://marunrun.github.io/media/js/jquery.min.js"></script>
-    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-</head>
-<style>
-    @media screen and (min-width: 1300px) {
-        .v .vbtn .vsubmit {
-            border-radius: 0;
-            padding: 0;
-            color: #fff;
-            line-height: 44px;
-            width: 100%;
-            border: none;
-            background: #595485;
-        }
-
-        .v .vwrap .vedit .vctrl span.vpreview-btn,
-        .v .vwrap .vcontrol .col.col-20,
-        .v .vlist .vcard .vhead .vsys {
-            display: none;
-        }
-
-        .v .vwrap .vmark .valert {
-            padding-top: 0px;
-        }
-
-        .vtext {
-            padding: 0;
-        }
-    }
-</style>
-
-<body>
-    <div id="vcomments">
-    </div>
-    <script>
-        new Valine({
-            el: '#vcomments',
-            appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
-            appKey: 'xqG9hKH7igqsal19BmOydrKJ',
-            notify: true,
-            verify: false,
-            avatar: 'retro',
-            pageSize: 10,
-            placeholder: '既然来了，何不畅所欲言呢？',
-            visitor: true // 阅读量统计
-        })
-    </script>
-</body>
-
-
-<script type="text/javascript">
-    jinrishici.load(function (result) {
-        var jrsc_plac = result.data.content + "\n「" + result.data.origin.title + "」" + result.data.origin
-            .dynasty + " · " + result.data.origin.author
-        document.getElementById("veditor").setAttribute("placeholder", jrsc_plac);
-    });
 </script>
-                            <div class="clear"></div>
-                            
-                        </div>
-                    </div>
+
+            <div class="post-container">
+                <div class="post-detail">
+                    <article>
+                        <!-- <div class="post-content-wrapper"> -->
+                            <div class="post-content">
+                                <div class="friends-desc">
+                                    
+                                </div>
+                                <h3 id="linklist">友链列表</h3>
+                                
+                                    
+                                
+                            </div>
+                        <!-- </div> -->
+                    </article>
                 </div>
-                <div class="col-xs-6 col-sm-2"></div>
-            </div>
-        </div>
-        <div id="bg">
-        </div>
-        <div id="bgchoice" style="display: none">link</div>
-        
-        <div id="bgurl" style="display:none">http://img.runrun520.cn/background.jpg</div>
-           
-    </div>
-
-    <!-- 响应式布局，针对手机端内容显示 -->
-    <div class="nav-small">
-        <head>
-  <!-- 引入Bootstrap核心样式文件 -->
-  <link rel="stylesheet" href="https://marunrun.github.io/media/css/bootstrap.min.css">
-</head>
-
-<body>
-  <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-          data-target="#barmenu" aria-expanded="false" id="barbutton">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="https://marunrun.github.io">Marun&#39;s Blog&nbsp;&nbsp;|</a>
-      </div>
-
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="barmenu">
-        <ul class="nav navbar-nav">
-          
-          
-          <li>
-            <a href="/">
-              首页
-            </a>
-          </li>
-          
-          
-          
-          <li>
-            <a href="/archives">
-              归档
-            </a>
-          </li>
-          
-          
-          
-          <li>
-            <a href="/tags">
-              标签
-            </a>
-          </li>
-          
-          
-          
-          <li>
-            <a href="/post/about">
-              关于
-            </a>
-          </li>
-          
-          
-          
-          
-          <li><a href="https://marunrun.github.io/friends">友链</a></li>
-
-          
-        </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-  </nav>
-
-
-  <!-- 引入jQuery核心js文件 -->
-  <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script>
-  var btstate = false;
-  var bt = $("#barbutton");
-  var bm = $("#barmenu");
-  bt.click(function(){
-    dropdown();
-  })
-  function dropdown(){
-    console.log(btstate);
-    //下拉
-    if(btstate==false){
-      bt.removeClass("collapsed");
-      bt.attr("aria-expanded","true");
-      bm.attr("aria-expanded","true")
-      bm.fadeIn(700);
-      btstate = true;
-    }
-    else{
-      bt.addClass("collapsed");
-      bt.attr("aria-expanded","false");
-      bm.removeClass("in");
-      bm.hide();
-      bm.attr("aria-expanded","false");
-      btstate = false;
-    }
-  }
-  </script> 
-</body>
-        <div style="margin-top:60px"></div>
-        <body>
-    <div id="friendscontainermobile">
-        
-        
-        
-    </div>
-
-    <div id="friendscontainer">
-        
-        
-        
-    </div>
-</body>
-        <div style="margin-bottom:60px">&nbsp;</div>
-        <div name="comment" style="background: white">
-            <div class="commentcontainer">
                 
-                <head>
-    <script src='https://marunrun.github.io/media/js/valine.min.js'></script>
-    <script src="https://marunrun.github.io/media/js/jquery.min.js"></script>
-    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-</head>
-<style>
-    @media screen and (min-width: 1300px) {
-        .v {
-            margin-top: 10%;
-        }
+            </div>
 
-        .v .vwrap {
-            overflow: hidden;
-        }
 
-        .v .vwrap {
-            padding: 0 0 44px;
-        }
 
-        .v .veditor {
-            resize: none;
-        }
+            <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
 
-        .veditor::placeholder {
-            color: #b3b3b3;
-            font-size: 18px;
-            text-align: center;
-            line-height: 3rem;
-            font-family: kaiti;
-        }
-
-        .v .vwrap .vedit {
-            padding-top: 0
-        }
-
-        .v .vwrap .vheader {
-            width: 80%;
-            bottom: 0;
-            position: absolute;
-            background: #f7f7f7;
-        }
-
-        .v .vinput {
-            padding: 10px 15px;
-        }
-
-        .v .vwrap .vheader .vinput {
-            border-bottom: 0px
-        }
-
-        .v .vwrap .vedit .vctrl {
-            margin-top: -44px;
-            right: 0;
-            position: absolute;
-            margin-right: -3px;
-        }
-
-        .v .vwrap .vcontrol {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 20%;
-            padding-top: 0px;
-        }
-    }
-
-    .v .vwrap .vcontrol .col.col-80 {
-        width: 100%;
-    }
-
-    .v .vbtn.vsubmit {
-        border-radius: 0;
-        padding: 0;
-        color: #fff;
-        line-height: 44px;
-        width: 100%;
-        border: none;
-        background: #595485;
-    }
-
-    .v .vwrap .vedit .vctrl span.vpreview-btn,
-    .v .vwrap .vcontrol .col.col-20,
-    .v .vlist .vcard .vhead .vsys {
-        display: none;
-    }
-
-    .v .vwrap .vmark .valert {
-        padding-top: 0px;
-    }
-
-    .vtext {
-        padding: 0;
-    }
-
-    @media screen and (max-width: 1300px) {
-        .v .vwrap .vmark .valert {
-            margin-top: 60%;
-        }
-
-        .vwrap {
-            margin: 15px;
-            width: 100%;
-        }
-
-        .v .vwrap .vheader .vinput {
-            padding: 10px 5px;
-        }
-
-        .v .vwrap {
-            overflow: auto;
-        }
-
-        .v .veditor {
-            min-height: 30rem;
-            resize: none;
-        }
-
-        .v .vinput {
-            padding: 10px 15px;
-            font-size: 20px;
-        }
-
-        .v .vwrap .vedit .vctrl {
-            right: 0;
-        }
-
-        .v .vempty {
-            padding: 1.25em;
-            text-align: center;
-            color: #999;
-            font-size: 25px;
-        }
-
-    }
-</style>
-
-<body>
-    <div id="vcomments1"></div>
-    <script>
-        new Valine({
-            el: '#vcomments1',
-            appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
-            appKey: 'xqG9hKH7igqsal19BmOydrKJ',
-            notify: true,
-            verify: false,
-            avatar: 'retro',
-            pageSize: 10,
-            placeholder: '既然来了，那就留个痕迹吧~',
-            visitor: true // 阅读量统计
-        })
-    </script>
-</body>
-
-<script type="text/javascript">
-    jinrishici.load(function (result) {
-        var jrsc_plac = result.data.content + "\n「" + result.data.origin.title + "」" + result.data.origin
-            .dynasty + " · " + result.data.origin.author
-        document.getElementById("veditor").setAttribute("placeholder", jrsc_plac);
-    });
+<script>
+  hljs.highlightAll()
 </script>
-                <div class="clear"></div>
-                
-            </div>
+
         </div>
     </div>
-    <div id="landlord">
-        <div class="message" style="opacity:0"></div>
-        <canvas id="live2d" width="240" height="250" class="live2d"></canvas>
-    </div>
-    <div id="domainname" style="display:none">https://marunrun.github.io</div>
 </body>
 
 </html>
-
-<script type="text/javascript">
-    var message_Path = '/live2d/'
-    var home_Path = document.getElementById("domainname").innerHTML+"/"; //此处修改为你的域名，必须带斜杠
-</script>
-<script type="text/javascript" src="https://marunrun.github.io/media/live2d/js/live2d.js"></script>
-<script type="text/javascript" src="https://marunrun.github.io/media/live2d/js/message.js"></script>
-<script type="text/javascript">
-    loadlive2d("live2d", "https://marunrun.github.io/media/live2d/assets/tororo.model.json");
-</script>
-
-
-<script>
-        var bgchoice=$('#bgchoice').html();
-        var bg = $('#bg');
-        var bgurl = document.getElementById("bgurl").innerHTML;
-        if(bgchoice=='default')
-            for (var i = 0; i < 3; i++)
-                bgurl = bgurl.replace("\\", "/");
-        bg.css("background", "url('" + bgurl + "')");
-</script>

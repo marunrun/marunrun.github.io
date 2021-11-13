@@ -1,0 +1,326 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>mysql中 group by排序，derived_merge优化的坑 | Marun&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://marunrun.github.io/favicon.ico?v=1636816255894">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://marunrun.github.io/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1636816255894"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    mysql中 group by排序，derived_merge优化的坑
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2020-09-11 ·
+                    </time>
+                    
+                        <a href="https://marunrun.github.io/Isdsr38FG/" class="post-tags">
+                            # mysql
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>一个简单的表</p>
+<pre><code class="language-mysql">CREATE TABLE `test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `spu_id` int(11) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+</code></pre>
+<p>大概内容</p>
+<table>
+<thead>
+<tr>
+<th>id</th>
+<th>spu_id</th>
+<th>price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>100</td>
+<td>200</td>
+</tr>
+<tr>
+<td>2</td>
+<td>100</td>
+<td>100</td>
+</tr>
+<tr>
+<td>3</td>
+<td>200</td>
+<td>400</td>
+</tr>
+<tr>
+<td>4</td>
+<td>200</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<p>对spu_id进行分组，按price从小到大排序：</p>
+<pre><code class="language-mysql">SELECT * FROM `test`  GROUP BY spu_id ORDER BY price
+</code></pre>
+<p>直接使用group by 查出来的数据是按id顺序分组的，并未达到预期</p>
+<ol>
+<li>尝试使用子查询，先排序再分组</li>
+</ol>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price ) AS tmp 
+GROUP BY spu_id
+</code></pre>
+<blockquote>
+<p>注意：这个方式在低版本中有效。在5.7版本中引入新特性 derived_merge优化过后无效了。</p>
+</blockquote>
+<p>具体无效原因我们可使用<code>explain</code> 分析</p>
+<pre><code class="language-mysql">EXPLAIN
+SELECT
+	* 
+FROM
+	( SELECT * FROM `test` ORDER BY price) AS tmp 
+GROUP BY spu_id;
+</code></pre>
+<p>如图所示：</p>
+<p><img src="http://img.runrun520.cn/J~~%5DIO91~U0EIZG2%5D4EM%25~A.png" alt="" loading="lazy"><br>
+MySQL 将子查询优化成了一个简单查询，子查询中的排序无效~</p>
+<p>解决方法：</p>
+<ol>
+<li>
+<p>将derived_merge 关闭</p>
+<p><code>SET optimizer_switch='derived_merge=off';</code></p>
+<p><code>SET GLOBAL optimizer_switch='derived_merge=off';</code></p>
+</li>
+<li>
+<p>使用特殊的查询阻止 <code>derived_merge</code> 优化</p>
+<p>可以通过在子查询中使用任何阻止合并的构造来禁用合并，尽管这些构造对实现的影响不那么明显。防止合并的构造与派生表和视图引用相同：</p>
+<ul>
+<li>聚合函数（<a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_sum"><code>SUM()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_min"><code>MIN()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_max"><code>MAX()</code></a>， <a href="https://dev.mysql.com/doc/refman/5.7/en/aggregate-functions.html#function_count"><code>COUNT()</code></a>，等等）</li>
+<li><code>DISTINCT</code></li>
+<li><code>GROUP BY</code></li>
+<li><code>HAVING</code></li>
+<li><code>LIMIT</code></li>
+<li><a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION</code></a> 要么 <a href="https://dev.mysql.com/doc/refman/5.7/en/union.html"><code>UNION ALL</code></a></li>
+<li>选择列表中的子查询</li>
+<li>分配给用户变量</li>
+<li>仅引用文字值（在这种情况下，没有基础表）</li>
+</ul>
+</li>
+</ol>
+<p>以上内容参考文档：<a href="https://dev.mysql.com/doc/refman/5.7/en/derived-table-optimization.html">mysql文档</a></p>
+<p>那么我们可以将上面的那条sql语句修改为：</p>
+<pre><code class="language-mysql">SELECT
+	* 
+FROM
+	( SELECT * FROM `test` HAVING 1=1 ORDER BY price   ) AS tmp 
+GROUP BY spu_id;
+</code></pre>
+<p>使用 <code>having</code> 来阻止合并</p>
+<p>那么再用<code>explain</code>看看</p>
+<figure data-type="image" tabindex="1"><img src="http://img.runrun520.cn/QQ%E5%9B%BE%E7%89%8720200911153046.png" alt="image-20200911152244246" loading="lazy"></figure>
+<blockquote>
+<p>如有错误请指正~ 请多包涵</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://marunrun.github.io/hyperf-grafana/" class="post-title gt-a-link">
+                     在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控
+                </a>
+            </div>
+        
+
+        
+            <span id="/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng//" class="leancloud_visitors" data-flag-title="mysql中 group by排序，derived_merge优化的坑">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://marunrun.github.io/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
