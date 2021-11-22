@@ -1,0 +1,322 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>部署 packagist私服 搭配gitlab 私服使用  | Marun&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1637573808903">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://blog.marun.run/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1637573808903"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    部署 packagist私服 搭配gitlab 私服使用 
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2021-11-22 ·
+                    </time>
+                    
+                        <a href="https://blog.marun.run/QsSo6IGId/" class="post-tags">
+                            # PHP
+                        </a>
+                    
+                </div>
+                <div class="post-content">
+                    <p>部署packagist 搭配gitlab使用</p>
+<!-- more -->
+<p>源码地址：<a href="https://github.com/composer/packagist">composer/packagist</a><br>
+笔者在写这篇文章的时候对应的<code>commit sha</code> :<code>aa0d63fd6ebbfd991aa3ab652d33c6c8e463543a</code></p>
+<blockquote>
+<p>因为<code>packagist</code>没有版本的概念 所以使用<code>commit sha</code> 的方式来记录一下</p>
+</blockquote>
+<h2 id="环境安装">环境安装</h2>
+<p>由于最新版使用的是<code>php8.0</code>,所以来安装一下8.0</p>
+<p>使用<code>apt</code>安装<code>php8.0</code></p>
+<pre><code class="language-shell">sudo apt install php8.0 php8.0-bcmath php8.0-redis php8.0-cli  php8.0-zip  php8.0-mysql  php8.0-http php8.0-curl  php8.0-common php8.0-raphf  php8.0-dev  php8.0-mbstring php8.0-dom php8.0-xml
+</code></pre>
+<p>安装过程比较简单，基本如上</p>
+<blockquote>
+<p>在安装完成后，composer install 时出现<code>unrecognised compile-time option bit(s)</code><br>
+按照这个<a href="https://github.com/oerdnj/deb.sury.org/issues/1674">issure</a> 只用执行以下命令即可（如果你没有出现任何问题，无视即可）<br>
+<code>sudo apt-get install --only-upgrade libpcre2-16-0 libpcre2-32-0 libpcre2-8-0 libpcre2-dev libpcre2-posix2</code></p>
+</blockquote>
+<h2 id="项目部署">项目部署</h2>
+<p><code>git clone https://github.com/composer/packagist.git &amp;&amp; cd packagist</code></p>
+<h3 id="项目配置">项目配置</h3>
+<p>拉取代码之后，先配置一下<code>redis</code>,<code>database</code> 等等<br>
+打开<code>.env</code>文件</p>
+<pre><code class="language-env"># 数据库配置， 修改成自己的配置，并确保拥有packagist库
+DATABASE_URL=&quot;mysql://root:123456@127.0.0.1:3306/packagist?serverVersion=8.0&quot;
+
+# ALGOLIA 配置,搜索用。 可前往 https://www.algolia.com/ 注册，免费使用，如果只是尝试本地部署，可忽略
+ALGOLIA_APP_ID=xxx
+ALGOLIA_ADMIN_KEY=xxx
+ALGOLIA_SEARCH_KEY=xxx
+ALGOLIA_INDEX_NAME=xxx
+
+# redis 配置，可换成自己
+REDIS_URL=redis://localhost
+
+# 谷歌的一个验证，我在使用时，这里会有点问题，下面会讲。
+###&gt; beelab/recaptcha2-bundle ###
+APP_RECAPTCHA_ENABLED=false
+APP_RECAPTCHA_SITE_KEY=needed
+APP_RECAPTCHA_SECRET=needed
+###&lt; beelab/recaptcha2-bundle ###
+</code></pre>
+<h3 id="apcu缓存错误">apcu缓存错误</h3>
+<p><code>config/packages/cache.yaml</code> 文件里的<code>system</code>,使用的<code>apcu</code>,由于我的php没有装这个扩展导致缓存报错</p>
+<pre><code class="language-yaml">framework:
+    cache:
+        app: cache.adapter.redis
+		# 下面的这个system缓存 使用的是apcu。如果你没有安装apcu这个php扩展，可以替换成其他的
+		# 例如：cache.adapter.redis  cache.adapter.filesystem 等等
+        system: cache.adapter.apcu
+        default_redis_provider: snc_redis.cache
+        pools:
+            doctrine.cache: null
+        prefix_seed: packagist
+</code></pre>
+<h3 id="recaptcha2的问题"><code>recaptcha2</code>的问题</h3>
+<p>查阅以下代码。<br>
+<a href="https://github.com/composer/packagist/blob/f57912d64181e4de2c405c0b63186e78d4c2e4f6/templates/registration/register.html.twig?_pjax=%23js-repo-pjax-container%2C+.context-loader-container%2C+%5Bdata-pjax-container%5D#L3">templates/registration/register.html.twig</a><br>
+<a href="https://github.com/composer/packagist/blob/f57912d64181e4de2c405c0b63186e78d4c2e4f6/templates/reset_password/request.html.twig?_pjax=%23js-repo-pjax-container%2C+.context-loader-container%2C+%5Bdata-pjax-container%5D#L3">templates/reset_password/request.html.twig</a></p>
+<p>我们会发现这个设置了一个<code>set requiresRecaptcha = true</code>，这个会让我们上面<code>.env</code>中所设置的<code>APP_RECAPTCHA_ENABLED=false</code> 无效。</p>
+<p>这样就会导致如果你没有设置<code>APP_RECAPTCHA_SITE_KEY</code>和<code>APP_RECAPTCHA_SECRET</code>，那么你就将永远无法提交注册表单，和重置密码的表单。</p>
+<p>这个问题困扰了我很久，具体表现为，点击注册按钮，没有任何反应，只有<code>console</code>控制台报了一下<code>recaptcha.js</code>的错误。</p>
+<p>如果你跟我一样，并没有设置<code>recaptcha</code>,那么你需要删除上面两个代码文件中的<code>{% set requiresRecaptcha = true %}</code><br>
+并且再次重新 <code>composer install</code>，或者手动运行<code>php bin/console cache:clear</code></p>
+<p>当你都已经准备好了之后，就可以使用<code>composer install</code>来安装你的程序了。</p>
+<p>然后使用<code>symfony serve</code> 启动一个简单的<code>webserver</code></p>
+<blockquote>
+<p>如果你没有<code>symfony</code>,请到这里下载一个 https://symfony.com/download</p>
+</blockquote>
+<h2 id="提交自己的包">提交自己的包</h2>
+<p>一旦你成功完成以上操作，成功注册了一个账号之后，你可以尝试提交自己的私有包。</p>
+<p>例如 <code>https://github.com/xxx/xxx</code>，<code>https://gitlab.com/xxx/xxx</code><br>
+但，需要记住的是： 这个链接对应的代码库应该是一个 pulic 公开的库,否则你需要到你部署<code>packagist</code>项目的机器上设置<code>ssh</code> 或者 设置 <code>git clone https</code>时的账号密码</p>
+<p>而且你的代码库中，应该拥有<code>composer.json</code>文件，并且正确的配置<code>composer.json</code>内容。</p>
+<p>一旦提交成功，你可以点击<code>update</code>按钮更新你的私有包，记住要在服务器上运行<code>php bin/console packagist:run-workers</code><br>
+当然 最后的做法是按照文档上的，在服务器上使用<code>crontab</code> 运行上面的命令。</p>
+<h2 id="使用自己的包">使用自己的包</h2>
+<p>一旦上面的都完成了，那么你就已经成功的提交了一个包到自己私有的<code>packagist</code>上了<br>
+在另一个项目中的<code>composer.json</code>中加上 自己的仓库</p>
+<pre><code class="language-json">    &quot;repositories&quot;: [
+        {
+			&quot;type&quot; : &quot;composer&quot;,
+			&quot;url&quot; : &quot;https://packagist.mydomain.com&quot;
+        }
+	]
+</code></pre>
+<p>然后<code>composer require my/packagist</code>，你就可以成功的下载</p>
+<h2 id="配置私有的gitlab-domains">配置私有的gitlab-domains</h2>
+<p>正常来说，我们的包应该拥有一个版本号，并且可以下载<code>dist</code><br>
+但如果我们使用私有的<code>gitlab</code>,每次<code>composer install</code> 或者 <code>composer require</code> 时 是使用 <code>git clone</code>的方式去拉取源码。</p>
+<blockquote>
+<p>你可以使用 <code>composer require xxx/xxx -vvv</code>的方式来查看composer 下载每个包的细节</p>
+</blockquote>
+<p>这样就会对你<code>composer install</code>时的环境有要求，必须拥有git 命令。<br>
+在一些k8s,docker 镜像中install 时可能会出现一些些问题。<br>
+我们在<code>packagist</code>部署的机器上运行下面的这个命令，再次去<code>packagist</code>中更新自己的包<br>
+然后再<code>rm -rf vendor &amp;&amp; rm -rf composer.lock &amp;&amp; composer install -vvv</code> 你就可以看到以dist的方式去gitlab下载源码了，不再是<code>git clone</code>的方式去克隆源码</p>
+<pre><code> composer --global config gitlab-domains gitlab.xxx.cn gitlab.com
+</code></pre>
+<!-- more -->
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/gitlab-cicd/" class="post-title gt-a-link">
+                    gitlab-ci/cd
+                </a>
+            </div>
+        
+
+        
+            <span id="/bu-shu-packagist-si-fu-da-pei-gitlab-si-fu-shi-yong//" class="leancloud_visitors" data-flag-title="部署 packagist私服 搭配gitlab 私服使用 ">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://blog.marun.run/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>

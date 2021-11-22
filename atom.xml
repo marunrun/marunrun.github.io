@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://blog.marun.run</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2021-11-13T16:14:11.790Z</updated>
+    <updated>2021-11-22T09:36:51.239Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://blog.marun.run"/>
     <link rel="self" href="https://blog.marun.run/atom.xml"/>
@@ -10,6 +10,17 @@
     <logo>https://blog.marun.run/images/avatar.png</logo>
     <icon>https://blog.marun.run/favicon.ico</icon>
     <rights>All rights reserved 2021, Marun&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[部署 packagist私服 搭配gitlab 私服使用 ]]></title>
+        <id>https://blog.marun.run/bu-shu-packagist-si-fu-da-pei-gitlab-si-fu-shi-yong/</id>
+        <link href="https://blog.marun.run/bu-shu-packagist-si-fu-da-pei-gitlab-si-fu-shi-yong/">
+        </link>
+        <updated>2021-11-22T09:31:54.000Z</updated>
+        <summary type="html"><![CDATA[<p>部署packagist 搭配gitlab使用</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>部署packagist 搭配gitlab使用</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[gitlab-ci/cd]]></title>
         <id>https://blog.marun.run/gitlab-cicd/</id>
