@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://blog.marun.run</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2022-01-17T02:23:38.853Z</updated>
+    <updated>2022-03-01T07:01:21.659Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://blog.marun.run"/>
     <link rel="self" href="https://blog.marun.run/atom.xml"/>
@@ -10,6 +10,21 @@
     <logo>https://blog.marun.run/images/avatar.png</logo>
     <icon>https://blog.marun.run/favicon.ico</icon>
     <rights>All rights reserved 2022, Marun&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[activiti, camunda, 会签 或签]]></title>
+        <id>https://blog.marun.run/activiti-camunda-hui-qian-huo-qian/</id>
+        <link href="https://blog.marun.run/activiti-camunda-hui-qian-huo-qian/">
+        </link>
+        <updated>2022-03-01T06:59:32.000Z</updated>
+        <summary type="html"><![CDATA[<p>会签，或签，依次审批借助于multi-instance</p>
+<p><a href="https://docs.camunda.io/docs/0.26/reference/bpmn-workflows/multi-instance/">Multi-Instance | Camunda Cloud Docs</a></p>
+<p><a href="https://www.activiti.org/userguide/#bpmnMultiInstance">Activiti User Guide</a></p>
+]]></summary>
+        <content type="html"><![CDATA[<p>会签，或签，依次审批借助于multi-instance</p>
+<p><a href="https://docs.camunda.io/docs/0.26/reference/bpmn-workflows/multi-instance/">Multi-Instance | Camunda Cloud Docs</a></p>
+<p><a href="https://www.activiti.org/userguide/#bpmnMultiInstance">Activiti User Guide</a></p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[mysql view 字符集排序报错]]></title>
         <id>https://blog.marun.run/mysql-view-zi-fu-ji-pai-xu-bao-cuo/</id>

@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>mysql view 字符集排序报错 | Marun&#39;s Blog</title>
+<title>camunda | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1646118065271">
 
@@ -37,11 +37,11 @@
 </script>
 
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
-    <nav class="navbar navbar-expand-lg">
+    <div class="main-content">
+        <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="/">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -109,113 +109,56 @@
     }
 </script>
 
-    <div class="post-container">
-        <div class="post-detail gt-bg-theme-color-second">
-            <article class="gt-post-content">
-                <h2 class="post-title">
-                    mysql view 字符集排序报错
-                </h2>
-                <div class="post-info">
-                    <time class="post-time gt-c-content-color-first">
-                        · 2022-01-17 ·
-                    </time>
-                    
-                        <a href="https://blog.marun.run/Isdsr38FG/" class="post-tags">
-                            # mysql
-                        </a>
-                    
-                </div>
-                <div class="post-content">
-                    <p>General error: 1267 Illegal mix of collations</p>
-<!-- more -->
-<p>在使用mysql视图时，报错</p>
-<pre><code>SQLSTATE[HY000]: General error: 1267 Illegal mix of collations (utf8mb4_general_ci,COERCIBLE) and (utf8mb4_unicode_ci,COERCIBLE) for operation '='
-</code></pre>
-<p>通过命令</p>
-<pre><code class="language-mysql">SHOW CREATE TABLE view_table_name;
-</code></pre>
-<p>查看字符集，以及排序规则</p>
-<table>
-<thead>
-<tr>
-<th>character_set_client</th>
-<th>collation_connection</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>utf8mb4</td>
-<td>utf8mb4_general_ci</td>
-</tr>
-</tbody>
-</table>
-<p>发现视图的排序规则错误。</p>
-<p>删除原有view 并重建</p>
-<pre><code class="language-mysql">-- 设置排序规则
-SET collation_connection = utf8mb4_unicode_ci;
--- 删除原有的view
-drop VIEW view_table_name;
--- 重新新建view
-create view view_table_name ....
-</code></pre>
-<p>如果是字符集报错，同理修改即可。</p>
-<pre><code class="language-mysql">SET character_set_client = utf8mb4;
-SET character_set_results = utf8mb4;
-SET character_set_connection = utf8mb4;
-</code></pre>
-<hr>
-<p>参考资料： https://stackoverflow.com/questions/9422189/why-is-my-view-utf8-and-how-can-i-change-it-to-latin1</p>
-
-                </div>
-            </article>
+        <div class="current-tag-container">
+            <h2 class="title gt-c-content-color-first">
+                #camunda
+            </h2>
         </div>
-
+        <div class="post-list-container">
+    <div class="post-inner">
         
-            <div class="next-post">
-                <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://blog.marun.run/bu-shu-packagist-si-fu-da-pei-gitlab-si-fu-shi-yong/" class="post-title gt-a-link">
-                    部署 packagist私服 搭配gitlab 私服使用 
-                </a>
+            <div class="post gt-bg-theme-color-second">
+                <div class="post-left">
+                    <div>
+                        
+                        <a href="https://blog.marun.run/activiti-camunda-hui-qian-huo-qian/">
+                            <span class="post-title gt-c-content-color-first">activiti, camunda, 会签 或签</span>
+                        </a>
+                    </div>
+                    <div class="gt-post-content post-abstract gt-c-content-color-second">
+                        会签，或签，依次审批借助于multi-instance
+Multi-Instance | Camunda Cloud Docs
+Activiti User Guide
+
+                    </div>
+                    <div class="post-info">
+                        <time class="post-time gt-c-content-color-first">
+                            发布于 · 2022-03-01 ·
+                        </time>
+                        
+                            <a href="https://blog.marun.run/activiti/" class="post-tag">
+                                # activiti
+                            </a>
+                        
+                            <a href="https://blog.marun.run/camunda/" class="post-tag">
+                                # camunda
+                            </a>
+                        
+                            <a href="https://blog.marun.run/workflow/" class="post-tag">
+                                # workflow
+                            </a>
+                        
+                    </div>
+                </div>
+                
             </div>
         
-
-        
-            <span id="/mysql-view-zi-fu-ji-pai-xu-bao-cuo//" class="leancloud_visitors" data-flag-title="mysql view 字符集排序报错">
-                <em class="post-meta-item-text">阅读量 </em>
-                <i class="leancloud-visitors-count">0</i>
-            </span>
-        
-
-        
-
-        
-            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
-
-<style>
-	div#vcomments{
-		width:100%;
-		max-width: 1000px;
-		padding: 2.5%
-	}
-</style>
-
-
-	<div id="vcomments"></div>
-
-<script>
-	new Valine({
-		el: '#vcomments',
-		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
-		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
-		avatar: 'robohash',
-		pageSize: 5,
-		recordIp: true,
-		placeholder: '可以留下您的足迹～',
-		visitor: true,
-	});
-</script>
-
-        
+    </div>
+</div>
+        <div class="pagination-container">
+    
+    
+</div>
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">day day up</div>
