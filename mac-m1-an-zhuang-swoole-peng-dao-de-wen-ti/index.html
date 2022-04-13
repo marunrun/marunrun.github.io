@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>activiti | Marun&#39;s Blog</title>
+<title>Mac m1 安装swoole  碰到的问题 | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1649817168549">
 
@@ -37,11 +37,11 @@
 </script>
 
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
-    <div class="main-content">
-        <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="/">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -109,56 +109,93 @@
     }
 </script>
 
-        <div class="current-tag-container">
-            <h2 class="title gt-c-content-color-first">
-                #activiti
-            </h2>
-        </div>
-        <div class="post-list-container">
-    <div class="post-inner">
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://blog.marun.run/activiti-camunda-hui-qian-huo-qian/">
-                            <span class="post-title gt-c-content-color-first">activiti, camunda, 会签 或签</span>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Mac m1 安装swoole  碰到的问题
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-04-13 ·
+                    </time>
+                    
+                        <a href="https://blog.marun.run/QsSo6IGId/" class="post-tags">
+                            # PHP
                         </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        会签，或签，依次审批借助于multi-instance
-Multi-Instance | Camunda Cloud Docs
-Activiti User Guide
-
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2022-03-01 ·
-                        </time>
-                        
-                            <a href="https://blog.marun.run/activiti/" class="post-tag">
-                                # activiti
-                            </a>
-                        
-                            <a href="https://blog.marun.run/camunda/" class="post-tag">
-                                # camunda
-                            </a>
-                        
-                            <a href="https://blog.marun.run/workflow/" class="post-tag">
-                                # workflow
-                            </a>
-                        
-                    </div>
+                    
                 </div>
-                
+                <div class="post-content">
+                    <p>使用<code>pecl install swoole</code> 报错</p>
+<h2 id="一openssl-not-found">一.openssl not found</h2>
+<p>使用<code>brew install openssl</code></p>
+<pre><code>--enable-openssl --with-openssl-dir=/opt/homebrew/Cellar/openssl@3/3.0.1/
+</code></pre>
+<h2 id="二-library-not-found-for-latomic">二. library not found for -latomic</h2>
+<p>使用 <code>brew install gcc</code><br>
+切换gcc为brew安装的版本</p>
+<pre><code>export CC=gcc-11
+export CXX=g++-11
+</code></pre>
+<h2 id="三-pcre2h-not-found">三. pcre2.h not found</h2>
+<p>使用<code>brew install pcre2</code><br>
+然后软链到你当前使用的php版本下的pcre</p>
+<pre><code>ln -s /opt/homebrew/Cellar/pcre2/10.39/include/pcre2.h /opt/homebrew/Cellar/php@7.3/7.3.31_1/include/php/ext/pcre/pcre2.h
+</code></pre>
+<blockquote>
+<p>以上路径需要改成您自己的路径</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/activiti-camunda-hui-qian-huo-qian/" class="post-title gt-a-link">
+                    activiti, camunda, 会签 或签
+                </a>
             </div>
         
-    </div>
-</div>
-        <div class="pagination-container">
-    
-    
-</div>
+
+        
+            <span id="/mac-m1-an-zhuang-swoole-peng-dao-de-wen-ti//" class="leancloud_visitors" data-flag-title="Mac m1 安装swoole  碰到的问题">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">day day up</div>
