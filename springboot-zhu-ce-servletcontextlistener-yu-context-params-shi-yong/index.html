@@ -1,10 +1,10 @@
-<html lang="zh">
+<html>
 <head>
     <meta charset="utf-8" />
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>关于 - Marun&#39;s Blog</title>
+<title>Springboot 注册ServletContextListener  与context-params使用 | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1652070301437">
 
@@ -37,7 +37,7 @@
 </script>
 
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
@@ -110,28 +110,76 @@
 </script>
 
     <div class="post-container">
-        <div class="post-detail">
+        <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
+                <h2 class="post-title">
+                    Springboot 注册ServletContextListener  与context-params使用
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-05-09 ·
+                    </time>
+                    
+                        <a href="https://blog.marun.run/java/" class="post-tags">
+                            # java
+                        </a>
+                    
+                        <a href="https://blog.marun.run/springboot/" class="post-tags">
+                            # springboot
+                        </a>
+                    
+                        <a href="https://blog.marun.run/camunda/" class="post-tags">
+                            # camunda
+                        </a>
+                    
+                </div>
                 <div class="post-content">
-                    <blockquote>
-<p>欢迎来到我的小站呀，很高兴遇见你！🤝</p>
-</blockquote>
-<h2 id="关于本站">🏠 关于本站</h2>
-<pre><code>记录一些信息
+                    <h3 id="背景说明">背景说明：</h3>
+<p>在springboot中使用 <a href="https://docs.camunda.org/manual/7.17/reference/rest/overview/date-format/">camunda-rest</a>  会有配置日期格式的需求<br>
+而按照文档来配置 需要配置在<code>WEB-INF/web.xml</code>里，在springboot中我们并不需要配置这个<code>web.xml</code></p>
+<hr>
+<p>注册<code>camunda</code>的<code>Listenter</code>到<code>springboot</code>中：</p>
+<pre><code class="language-java">@Configuration
+public class MyConfiguration { 
+
+    /**
+     * 把自定义的listener注册到容器中
+     * @return
+     */
+    @Bean
+    public ServletListenerRegistrationBean customJacksonDateFormatListener(){
+        ServletListenerRegistrationBean&lt;CustomJacksonDateFormatListener&gt; registrationBean = new ServletListenerRegistrationBean&lt;&gt;(new CustomJacksonDateFormatListener());
+        return registrationBean;
+    }
+}
 </code></pre>
-<h2 id="博主是谁">👨‍💻 博主是谁</h2>
-<pre><code>PHP Developer
+<p>在<code>application.yaml</code>中配置<code>context-param</code></p>
+<pre><code class="language-yaml">server:
+  servlet:
+    context-parameters:
+      org.camunda.bpm.engine.rest.jackson.dateFormat: yyyy-MM-dd HH:mm:ss
 </code></pre>
-<h2 id="兴趣爱好">⛹ 兴趣爱好</h2>
-<p>code LOL</p>
-<h2 id="联系我呀">📬 联系我呀</h2>
-<p>marunrun@163.com</p>
-<!-- more -->
 
                 </div>
             </article>
         </div>
-        <br>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/mac-m1-an-zhuang-swoole-peng-dao-de-wen-ti/" class="post-title gt-a-link">
+                    Mac m1 安装swoole  碰到的问题
+                </a>
+            </div>
+        
+
+        
+            <span id="/springboot-zhu-ce-servletcontextlistener-yu-context-params-shi-yong//" class="leancloud_visitors" data-flag-title="Springboot 注册ServletContextListener  与context-params使用">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
         
 
         
@@ -162,7 +210,6 @@
 </script>
 
         
-
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">day day up</div>
