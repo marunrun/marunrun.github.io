@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>mysql view 字符集排序报错 | Marun&#39;s Blog</title>
+<title>Mybastis Plus 使用mapper.xml | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1652428223570">
 
@@ -113,58 +113,129 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    mysql view 字符集排序报错
+                    Mybastis Plus 使用mapper.xml
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2022-01-17 ·
+                        · 2022-05-13 ·
                     </time>
                     
-                        <a href="https://blog.marun.run/Isdsr38FG/" class="post-tags">
-                            # mysql
+                        <a href="https://blog.marun.run/java/" class="post-tags">
+                            # java
+                        </a>
+                    
+                        <a href="https://blog.marun.run/springboot/" class="post-tags">
+                            # springboot
                         </a>
                     
                 </div>
                 <div class="post-content">
-                    <p>General error: 1267 Illegal mix of collations</p>
+                    <p>记录一下mybatis plus 中mapper的使用</p>
 <!-- more -->
-<p>在使用mysql视图时，报错</p>
-<pre><code>SQLSTATE[HY000]: General error: 1267 Illegal mix of collations (utf8mb4_general_ci,COERCIBLE) and (utf8mb4_unicode_ci,COERCIBLE) for operation '='
+<h2 id="mybatis-plus官网"><a href="https://baomidou.com/">mybatis plus官网</a></h2>
+<p>分页器配置</p>
+<pre><code class="language-java">@Configuration
+public class MybatisPlusConfig {
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return interceptor;
+    }
+}
 </code></pre>
-<p>通过命令</p>
-<pre><code class="language-mysql">SHOW CREATE TABLE view_table_name;
+<p>mapper.xml:</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE mapper PUBLIC &quot;-//mybatis.org//DTD Mapper 3.0//EN&quot; &quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;&gt;
+&lt;mapper namespace=&quot;mapper.HiProcinstMapper&quot;&gt;
+
+    &lt;select id=&quot;getTodoList&quot; resultType=&quot;model.HiProcinstModel&quot;&gt;
+        select PROC.*
+        from ACT_HI_PROCINST PROC
+                 left join ACT_RU_TASK TASK on PROC.PROC_INST_ID_ = TASK.PROC_INST_ID_ ${ew.customSqlSegment}
+
+    &lt;/select&gt;
+
+    &lt;!--   --&gt;
+    &lt;select id=&quot;getDoneList&quot; resultType=&quot;model.HiProcinstModel&quot;&gt;
+        select PROC.*
+        from ACT_HI_PROCINST PROC
+                 left join ACT_HI_TASKINST TASK on PROC.PROC_INST_ID_ = TASK.PROC_INST_ID_ ${ew.customSqlSegment}
+    &lt;/select&gt;
+
+&lt;/mapper&gt;
 </code></pre>
-<p>查看字符集，以及排序规则</p>
-<table>
-<thead>
-<tr>
-<th>character_set_client</th>
-<th>collation_connection</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>utf8mb4</td>
-<td>utf8mb4_general_ci</td>
-</tr>
-</tbody>
-</table>
-<p>发现视图的排序规则错误。</p>
-<p>删除原有view 并重建</p>
-<pre><code class="language-mysql">-- 设置排序规则
-SET collation_connection = utf8mb4_unicode_ci;
--- 删除原有的view
-drop VIEW view_table_name;
--- 重新新建view
-create view view_table_name ....
+<p>mapper.kt</p>
+<pre><code class="language-kotlin">
+package mapper;
+
+import com.baomidou.mybatisplus.core.conditions.Wrapper
+import model.HiProcinstModel;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage
+import com.baomidou.mybatisplus.core.toolkit.Constants
+import org.apache.ibatis.annotations.Param
+import org.apache.ibatis.annotations.Select
+
+interface HiProcinstMapper : BaseMapper&lt;HiProcinstModel&gt; {
+
+    /**
+     * 获取代办列表
+     */
+    fun getTodoList( page:IPage&lt;HiProcinstModel&gt;,@Param(Constants.WRAPPER) wrapper: Wrapper&lt;HiProcinstModel&gt;) : IPage&lt;HiProcinstModel&gt;
+
+    /**
+     * 获取已处理列表
+     */
+    fun getDoneList( page:IPage&lt;HiProcinstModel&gt;,@Param(Constants.WRAPPER) wrapper: Wrapper&lt;HiProcinstModel&gt;) : IPage&lt;HiProcinstModel&gt;
+
+}
 </code></pre>
-<p>如果是字符集报错，同理修改即可。</p>
-<pre><code class="language-mysql">SET character_set_client = utf8mb4;
-SET character_set_results = utf8mb4;
-SET character_set_connection = utf8mb4;
+<p>我们只在<code>mapper.xml</code>中写了关联查询的语句，其他查询条件和分页我们还是使用了<code>mybatisPlus</code>的分页插件 和<code>QueryWrapper</code></p>
+<p>在Service中调用</p>
+<pre><code class="language-kotlin">@Service
+open class HiProcinstServiceImpl : ServiceImpl&lt;HiProcinstMapper, HiProcinstModel&gt;(), IHiProcinstService {
+
+    @Resource
+    lateinit var processEngine: ProcessEngine
+
+    /**
+     * 待审批列表
+     */
+    override fun getTodoList(userId: String, pageParams: PageParams): Pagination&lt;ProcInstVo&gt; {
+        val queryWrapper = QueryWrapper&lt;HiProcinstModel&gt;()
+                // 任务分配给当前用户
+            .eq(&quot;TASK.${HiTaskinstModel.ASSIGNEE_}&quot;, userId)
+                // 并且是活动中的任务
+            .eq(&quot;PROC.${HiProcinstModel.STATE_}&quot;, HistoricProcessInstance.STATE_ACTIVE)
+            .orderByAsc(&quot;PROC.${HiProcinstModel.START_TIME_}&quot;)
+
+        val todoList = this.baseMapper.getTodoList(Page(pageParams.page, pageParams.pageSize), queryWrapper)
+
+
+        return Pagination(this.convert2Vo(todoList))
+    }
+
+    /**
+     * 已处理流程实例
+     */
+    override fun getDoneList(userId: String, pageParams: PageParams): Pagination&lt;ProcInstVo&gt; {
+        val queryWrapper = QueryWrapper&lt;HiProcinstModel&gt;()
+            // 任务分配给当前用户
+            .eq(&quot;TASK.${HiTaskinstModel.ASSIGNEE_}&quot;, userId)
+            // 并且任务已完成
+            .isNotNull(&quot;TASK.${HiTaskinstModel.END_TIME_}&quot;)
+            .orderByDesc(&quot;PROC.${HiProcinstModel.START_TIME_}&quot;)
+
+        val doneList = this.baseMapper.getDoneList(Page(pageParams.page, pageParams.pageSize), queryWrapper)
+
+
+        return Pagination(this.convert2Vo(doneList))
+    }
+
+}
+
 </code></pre>
-<hr>
-<p>参考资料： https://stackoverflow.com/questions/9422189/why-is-my-view-utf8-and-how-can-i-change-it-to-latin1</p>
 
                 </div>
             </article>
@@ -173,14 +244,14 @@ SET character_set_connection = utf8mb4;
         
             <div class="next-post">
                 <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://blog.marun.run/bu-shu-packagist-si-fu-da-pei-gitlab-si-fu-shi-yong/" class="post-title gt-a-link">
-                    部署 packagist私服 搭配gitlab 私服使用 
+                <a href="https://blog.marun.run/springboot-zhu-ce-servletcontextlistener-yu-context-params-shi-yong/" class="post-title gt-a-link">
+                    Springboot 注册ServletContextListener  与context-params使用
                 </a>
             </div>
         
 
         
-            <span id="/mysql-view-zi-fu-ji-pai-xu-bao-cuo//" class="leancloud_visitors" data-flag-title="mysql view 字符集排序报错">
+            <span id="/mybastis-plus-shi-yong-mapperxml//" class="leancloud_visitors" data-flag-title="Mybastis Plus 使用mapper.xml">
                 <em class="post-meta-item-text">阅读量 </em>
                 <i class="leancloud-visitors-count">0</i>
             </span>

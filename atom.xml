@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://blog.marun.run</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2022-05-09T04:25:20.365Z</updated>
+    <updated>2022-05-13T07:51:07.939Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://blog.marun.run"/>
     <link rel="self" href="https://blog.marun.run/atom.xml"/>
@@ -10,6 +10,17 @@
     <logo>https://blog.marun.run/images/avatar.png</logo>
     <icon>https://blog.marun.run/favicon.ico</icon>
     <rights>All rights reserved 2022, Marun&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[Mybastis Plus 使用mapper.xml]]></title>
+        <id>https://blog.marun.run/mybastis-plus-shi-yong-mapperxml/</id>
+        <link href="https://blog.marun.run/mybastis-plus-shi-yong-mapperxml/">
+        </link>
+        <updated>2022-05-13T07:35:19.000Z</updated>
+        <summary type="html"><![CDATA[<p>记录一下mybatis plus 中mapper的使用</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>记录一下mybatis plus 中mapper的使用</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Springboot 注册ServletContextListener  与context-params使用]]></title>
         <id>https://blog.marun.run/springboot-zhu-ce-servletcontextlistener-yu-context-params-shi-yong/</id>
@@ -92,12 +103,5 @@
         <link href="https://blog.marun.run/mysql-group-by-pai-xu-derived_merge-you-hua-de-keng/">
         </link>
         <updated>2020-09-11T07:23:21.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[ 在 Hyperf 框架中使用 prometheus + grafana 部署基本的监控]]></title>
-        <id>https://blog.marun.run/hyperf-grafana/</id>
-        <link href="https://blog.marun.run/hyperf-grafana/">
-        </link>
-        <updated>2020-02-05T16:00:00.000Z</updated>
     </entry>
 </feed>
