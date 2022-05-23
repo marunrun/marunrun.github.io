@@ -1,11 +1,10 @@
 <html>
-
 <head>
     <meta charset="utf-8" />
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>友情链接 | Marun&#39;s Blog</title>
+<title>kotlin jackson  missing type id property &#39;@class&#39; | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1653271897545">
 
@@ -38,12 +37,11 @@
 </script>
 
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
-
 <body>
 <div class="main gt-bg-theme-color-first">
-        <div class="main-content">
-            <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="/">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -111,28 +109,119 @@
     }
 </script>
 
-            <div class="post-container">
-                <div class="post-detail">
-                    <article>
-                        <!-- <div class="post-content-wrapper"> -->
-                            <div class="post-content">
-                                <div class="friends-desc">
-                                    
-                                </div>
-                                <h3 id="linklist">友链列表</h3>
-                                
-                                    
-                                
-                            </div>
-                        <!-- </div> -->
-                    </article>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    kotlin jackson  missing type id property &#39;@class&#39;
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-05-23 ·
+                    </time>
+                    
+                        <a href="https://blog.marun.run/kotlin/" class="post-tags">
+                            # kotlin
+                        </a>
+                    
+                        <a href="https://blog.marun.run/java/" class="post-tags">
+                            # java
+                        </a>
+                    
                 </div>
-                
+                <div class="post-content">
+                    <p>使用kotlin 搭配redis 存储json格式数据的问题</p>
+<!-- more -->
+<p>Redis 配置如下</p>
+<pre><code class="language-java">   @Bean
+    public RedisTemplate&lt;String, Object&gt; redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate&lt;String, Object&gt; redisTemplate = new RedisTemplate&lt;&gt;();
+
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+        // json 序列化
+        redisTemplate.setValueSerializer(RedisSerializer.json());
+
+        RedisSerializer&lt;String&gt; stringRedisSerializer = RedisSerializer.string();
+
+        // 使用StringRedisSerializer来序列化和反序列化redis的key值
+        redisTemplate.setKeySerializer(stringRedisSerializer);
+
+        // hash的key也采用String的序列化方式
+        redisTemplate.setHashKeySerializer(stringRedisSerializer);
+        // hash的value序列化方式采用jackson
+        redisTemplate.setHashValueSerializer(RedisSerializer.json());
+
+        return redisTemplate;
+    }
+</code></pre>
+<p>在使用redistemplate 时，我们使用json格式默认存储value，然后发现每次存进去的数据都会少<code>@class</code>  在取出数据反序列化的时候会报错</p>
+<p><code>GenericJackson2JsonRedisSerializer</code> 文件</p>
+<pre><code class="language-java">    public GenericJackson2JsonRedisSerializer(@Nullable String classPropertyTypeName) {
+        this(new ObjectMapper());
+        registerNullValueSerializer(this.mapper, classPropertyTypeName);
+        if (StringUtils.hasText(classPropertyTypeName)) {
+            this.mapper.enableDefaultTypingAsProperty(DefaultTyping.NON_FINAL, classPropertyTypeName);
+        } else {
+            this.mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+        }
+
+    }
+</code></pre>
+<p>查看源码，发现在这个jackson的配置中，默认使用了<code>DefaultTyping.NON_FINAL</code> 而在 kotlin中 我们的类 默认是<code>final</code>的  需要添加在类前面添加<code>open</code>修饰符</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/mybastis-plus-shi-yong-mapperxml/" class="post-title gt-a-link">
+                    Mybastis Plus 使用mapper.xml
+                </a>
             </div>
+        
+
+        
+            <span id="/kotlin-jackson-missing-type-id-property-class//" class="leancloud_visitors" data-flag-title="kotlin jackson  missing type id property &#39;@class&#39;">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
 
 
+	<div id="vcomments"></div>
 
-            <div class="site-footer gt-c-content-color-first">
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">day day up</div>
     <div class="social-container">
         
@@ -170,8 +259,7 @@
   hljs.highlightAll()
 </script>
 
-        </div>
     </div>
+</div>
 </body>
-
 </html>
