@@ -6,7 +6,7 @@
 
 <title>kotlin jackson  missing type id property &#39;@class&#39; | Marun&#39;s Blog</title>
 
-<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1653271897545">
+<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1653273173043">
 
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://blog.marun.run/styles/main.css">
@@ -89,7 +89,7 @@
             
         </div>
         <div style="text-align: center">
-            <form id="gridea-search-form" style="position: relative" data-update="1653271897545"
+            <form id="gridea-search-form" style="position: relative" data-update="1653273173043"
                 action="/search/">
                 <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
                 <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
@@ -169,6 +169,7 @@
     }
 </code></pre>
 <p>查看源码，发现在这个jackson的配置中，默认使用了<code>DefaultTyping.NON_FINAL</code> 而在 kotlin中 我们的类 默认是<code>final</code>的  需要添加在类前面添加<code>open</code>修饰符</p>
+<p>或者你也可以使用使用自定义objectMapper 并设置 <code>ObjectMapper.DefaultTyping.EVERYTHING</code></p>
 
                 </div>
             </article>
