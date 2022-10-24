@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://blog.marun.run</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2022-05-23T04:20:28.471Z</updated>
+    <updated>2022-10-24T07:34:34.563Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://blog.marun.run"/>
     <link rel="self" href="https://blog.marun.run/atom.xml"/>
@@ -10,6 +10,17 @@
     <logo>https://blog.marun.run/images/avatar.png</logo>
     <icon>https://blog.marun.run/favicon.ico</icon>
     <rights>All rights reserved 2022, Marun&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[Istio 服务网格启动顺序]]></title>
+        <id>https://blog.marun.run/istio-fu-wu-wang-ge-qi-dong-shun-xu/</id>
+        <link href="https://blog.marun.run/istio-fu-wu-wang-ge-qi-dong-shun-xu/">
+        </link>
+        <updated>2022-10-24T07:15:33.000Z</updated>
+        <summary type="html"><![CDATA[<p>记录一下istio服务网格的问题</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>记录一下istio服务网格的问题</p>
+]]></content>
+    </entry>
     <entry>
         <title type="html"><![CDATA[kotlin jackson  missing type id property '@class']]></title>
         <id>https://blog.marun.run/kotlin-jackson-missing-type-id-property-class/</id>
@@ -100,12 +111,5 @@
         <link href="https://blog.marun.run/android-ni-xiang-360-jia-gu-apkfrida-hook-java-dai-ma/">
         </link>
         <updated>2020-11-11T07:19:07.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[fiddler-实战 ]]></title>
-        <id>https://blog.marun.run/fiddler-shi-zhan-yi/</id>
-        <link href="https://blog.marun.run/fiddler-shi-zhan-yi/">
-        </link>
-        <updated>2020-11-10T06:12:25.000Z</updated>
     </entry>
 </feed>

@@ -1,11 +1,10 @@
 <html>
-
 <head>
     <meta charset="utf-8" />
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>友情链接 | Marun&#39;s Blog</title>
+<title>Istio 服务网格启动顺序 | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1666596797228">
 
@@ -38,12 +37,11 @@
 </script>
 
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
-
 <body>
 <div class="main gt-bg-theme-color-first">
-        <div class="main-content">
-            <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="/">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -111,28 +109,100 @@
     }
 </script>
 
-            <div class="post-container">
-                <div class="post-detail">
-                    <article>
-                        <!-- <div class="post-content-wrapper"> -->
-                            <div class="post-content">
-                                <div class="friends-desc">
-                                    
-                                </div>
-                                <h3 id="linklist">友链列表</h3>
-                                
-                                    
-                                
-                            </div>
-                        <!-- </div> -->
-                    </article>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    Istio 服务网格启动顺序
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-10-24 ·
+                    </time>
+                    
+                        <a href="https://blog.marun.run/k8s/" class="post-tags">
+                            # k8s
+                        </a>
+                    
+                        <a href="https://blog.marun.run/istio/" class="post-tags">
+                            # istio
+                        </a>
+                    
                 </div>
-                
+                <div class="post-content">
+                    <p>记录一下istio服务网格的问题</p>
+<!-- more -->
+<h1 id="前言">前言</h1>
+<p>如果启用了istio 服务网格，那么会自动的注入 <code>istio-proxy</code> sidecar</p>
+<p>这里的<code>proxy</code>容器与我们的业务容器启动顺序是不确定的，如果在<code>istio-proxy</code>未正确启动之前，在业务容器中就尝试对外进行网络通信，这个时候就会出现问题。 例如：数据库连接 redis连接初始化问题</p>
+<p>所以需要注意在业务代码中做好重试，当然现在大多数框架都自带重连机制。</p>
+<p>但在实际业务场景下，一旦开启了日志告警，每次服务重启就会导致一堆告警，会很麻烦，这个时候就还是需要控制一下istio 服务网格容器的启动。</p>
+<h1 id="解决方法">解决方法</h1>
+<h2 id="高版本使用istio自带配置">高版本使用istio自带配置</h2>
+<p>自Istio 1.7 版本开始，增加了<code>holdApplicationUntilProxyStarts</code>配置项，解决上述问题</p>
+<p>参考官网的<a href="https://istio.io/latest/zh/news/releases/1.7.x/announcing-1.7/change-notes/">changelog</a></p>
+<h2 id="低版本使用手动控制">低版本使用手动控制</h2>
+<p><code>istio-proxy</code> 有一个健康检查的接口，我们可以通过主动探测的方式来确认<code>istio-proxy</code>启动完成，最后再启动自己的服务</p>
+<pre><code class="language-shell">while [[ &quot;$(curl -s -o /dev/null -w ''%{http_code}'' localhost:15020/healthz/ready)&quot; != '200' ]]; do echo Waiting for Sidecar;sleep 1; done; echo Sidecar available; ./http
+</code></pre>
+<p>注意以上脚本 最后的./http 请替换成自己的业务运行脚本</p>
+<p>如果运行参数过多，可以自行编写<code>start.sh</code> 启动脚本，或者使用<code>supervision</code></p>
+<blockquote>
+<p>参考： https://zhuanlan.zhihu.com/p/369301902</p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/kotlin-jackson-missing-type-id-property-class/" class="post-title gt-a-link">
+                    kotlin jackson  missing type id property &#39;@class&#39;
+                </a>
             </div>
+        
+
+        
+            <span id="/istio-fu-wu-wang-ge-qi-dong-shun-xu//" class="leancloud_visitors" data-flag-title="Istio 服务网格启动顺序">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
 
 
+	<div id="vcomments"></div>
 
-            <div class="site-footer gt-c-content-color-first">
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">day day up</div>
     <div class="social-container">
         
@@ -170,8 +240,7 @@
   hljs.highlightAll()
 </script>
 
-        </div>
     </div>
+</div>
 </body>
-
 </html>
