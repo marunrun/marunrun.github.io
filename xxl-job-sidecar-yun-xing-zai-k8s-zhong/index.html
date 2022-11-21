@@ -6,7 +6,7 @@
 
 <title>xxl-job sidecar 运行在K8s中 | Marun&#39;s Blog</title>
 
-<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1669026452919">
+<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1669026512179">
 
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://blog.marun.run/styles/main.css">
@@ -89,7 +89,7 @@
             
         </div>
         <div style="text-align: center">
-            <form id="gridea-search-form" style="position: relative" data-update="1669026452919"
+            <form id="gridea-search-form" style="position: relative" data-update="1669026512179"
                 action="/search/">
                 <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
                 <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
@@ -119,6 +119,18 @@
                     <time class="post-time gt-c-content-color-first">
                         · 2022-11-21 ·
                     </time>
+                    
+                        <a href="https://blog.marun.run/xxl-job/" class="post-tags">
+                            # xxl-job
+                        </a>
+                    
+                        <a href="https://blog.marun.run/sidecar/" class="post-tags">
+                            # sidecar
+                        </a>
+                    
+                        <a href="https://blog.marun.run/k8s/" class="post-tags">
+                            # k8s
+                        </a>
                     
                 </div>
                 <div class="post-content">
@@ -364,8 +376,8 @@ spec:
 <figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/marunrun/xxl-job-k8s-agent/master/img_2.png" alt="img_2" loading="lazy"></figure>
 <p>这样只用给需要定时任务的<code>deploy</code>加上<code>agent</code> ，然后再去xxl-job里加上执行器，任务就可以了。这样不会再有多余的pod，每次定时任务都是在业务容器内去执行了。</p>
 <blockquote>
-<p>代码： https://github.com/marunrun/xxl-job-k8s-agent<br>
-<a href="https://github.com/xxl-job/xxl-job-executor-go">xxl-job/xxl-job-executor-go: xxl-job 执行器（golang 客户端） (github.com)</a></p>
+<p><a href="https://github.com/marunrun/xxl-job-k8s-agent">github 代码</a></p>
+<p><a href="https://github.com/xxl-job/xxl-job-executor-go">xxl-job/xxl-job-executor-go: xxl-job 执行器（golang 客户端） (github.com)</a></p>
 <p><a href="https://www.xuxueli.com/xxl-job/">分布式任务调度平台XXL-JOB (xuxueli.com)</a></p>
 </blockquote>
 
