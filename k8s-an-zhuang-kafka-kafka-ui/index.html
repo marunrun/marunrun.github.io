@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>Istio 服务网格启动顺序 | Marun&#39;s Blog</title>
+<title>k8s安装kafka  kafka-ui  | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1669022419295">
 
@@ -113,43 +113,130 @@
         <div class="post-detail gt-bg-theme-color-second">
             <article class="gt-post-content">
                 <h2 class="post-title">
-                    Istio 服务网格启动顺序
+                    k8s安装kafka  kafka-ui 
                 </h2>
                 <div class="post-info">
                     <time class="post-time gt-c-content-color-first">
-                        · 2022-10-24 ·
+                        · 2022-11-17 ·
                     </time>
+                    
+                        <a href="https://blog.marun.run/kafka/" class="post-tags">
+                            # kafka
+                        </a>
                     
                         <a href="https://blog.marun.run/k8s/" class="post-tags">
                             # k8s
                         </a>
                     
-                        <a href="https://blog.marun.run/istio/" class="post-tags">
-                            # istio
-                        </a>
-                    
                 </div>
                 <div class="post-content">
-                    <p>记录一下istio服务网格的问题</p>
-<!-- more -->
-<h1 id="前言">前言</h1>
-<p>如果启用了istio 服务网格，那么会自动的注入 <code>istio-proxy</code> sidecar</p>
-<p>这里的<code>proxy</code>容器与我们的业务容器启动顺序是不确定的，如果在<code>istio-proxy</code>未正确启动之前，在业务容器中就尝试对外进行网络通信，这个时候就会出现问题。 例如：数据库连接 redis连接初始化问题</p>
-<p>所以需要注意在业务代码中做好重试，当然现在大多数框架都自带重连机制。</p>
-<p>但在实际业务场景下，一旦开启了日志告警，每次服务重启就会导致一堆告警，会很麻烦，这个时候就还是需要控制一下istio 服务网格容器的启动。</p>
-<h1 id="解决方法">解决方法</h1>
-<h2 id="高版本使用istio自带配置">高版本使用istio自带配置</h2>
-<p>自Istio 1.7 版本开始，增加了<code>holdApplicationUntilProxyStarts</code>配置项，解决上述问题</p>
-<p>参考官网的<a href="https://istio.io/latest/zh/news/releases/1.7.x/announcing-1.7/change-notes/">changelog</a></p>
-<h2 id="低版本使用手动控制">低版本使用手动控制</h2>
-<p><code>istio-proxy</code> 有一个健康检查的接口，我们可以通过主动探测的方式来确认<code>istio-proxy</code>启动完成，最后再启动自己的服务</p>
-<pre><code class="language-shell">while [[ &quot;$(curl -s -o /dev/null -w ''%{http_code}'' localhost:15020/healthz/ready)&quot; != '200' ]]; do echo Waiting for Sidecar;sleep 1; done; echo Sidecar available; ./http
-</code></pre>
-<p>注意以上脚本 最后的./http 请替换成自己的业务运行脚本</p>
-<p>如果运行参数过多，可以自行编写<code>start.sh</code> 启动脚本，或者使用<code>supervision</code></p>
+                    <h2 id="k8s安装kafka-并开放外部访问">k8s安装kafka 并开放外部访问</h2>
 <blockquote>
-<p>参考： https://zhuanlan.zhihu.com/p/369301902</p>
+<p>参考文档：</p>
+<p><a href="https://artifacthub.io/packages/helm/bitnami/kafka">kafka 19.1.3 · bitnami/bitnami (artifacthub.io)</a></p>
+<p><a href="https://github.com/bitnami/charts/blob/main/bitnami/kafka/">charts/values.yaml at main · bitnami/charts (github.com)</a></p>
 </blockquote>
+<p>添加 helm repo</p>
+<pre><code>helm bitnami add bitnami https://charts.bitnami.com/bitnami
+</code></pre>
+<p>如果使用PV 请提前配置好<code>storageclass</code> 使用以下命令查看</p>
+<pre><code>kubectl get storageclass
+</code></pre>
+<p>建议使用<code>values.yaml</code>进行配置</p>
+<p>kafka 默认配置参考：<a href="https://github.com/bitnami/charts/blob/main/bitnami/kafka/values.yaml">charts/values.yaml at main · bitnami/charts (github.com)</a></p>
+<p>对应的zookeeper默认配置 <a href="https://github.com/bitnami/charts/tree/main/bitnami/zookeeper">charts/bitnami/zookeeper at main · bitnami/charts (github.com)</a></p>
+<p>如果使用PV 需要配置权限,不然会出现没有权限的情况</p>
+<pre><code class="language-yaml">volumePermissions: 
+  enabled: true
+zookeeper:
+  volumePermissions: 
+    enabled: true
+</code></pre>
+<p>如需使用外网访问请参考文档<a href="https://github.com/bitnami/charts/tree/main/bitnami/kafka#accessing-kafka-brokers-from-outside-the-cluster">charts/bitnami/kafka at main · bitnami/charts (github.com)</a>添加配置</p>
+<p>我这里使用nodePort方式：</p>
+<pre><code class="language-yaml">externalAccess:
+  enabled: true
+  service:
+    type: &quot;NodePort&quot;
+	autoDiscovery:
+		enabled: true
+serviceAccount:
+	create: true
+rbac:
+  create: true
+</code></pre>
+<p>注意这里需要创建额外的<code>svc</code> 以我这里为例，三个<code>cluster</code></p>
+<p>需要创建三个svc，<code>kafka-0-external</code> <code>kafka-1-external</code> <code>kafka-2-external</code></p>
+<pre><code class="language-yaml">kind: Service
+apiVersion: v1
+metadata:
+  name: kafka-{num}-external
+  namespace: database
+spec:
+  ports:
+    - name: port
+      protocol: TCP
+      port: 9094
+      targetPort: 9094
+  selector:
+    statefulset.kubernetes.io/pod-name: kafka-{num}
+  type: NodePort
+  sessionAffinity: None
+  externalTrafficPolicy: Cluster
+</code></pre>
+<p>这样运行起来，就可以通过<code>nodeip:nodeport</code>   来访问k8s内的kafka服务了</p>
+<pre><code class="language-bash">$&gt; kubectl get svc -n database kafka-0-external
+
+NAME               TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+kafka-0-external   NodePort   10.103.255.3   &lt;none&gt;        9094:32402/TCP   19h
+</code></pre>
+<p>以上面的这个为例，我们的节点ip是：<code>192.168.1.3</code></p>
+<p>那么在k8s 外部，就可以使用<code>192.168.1.3:32402</code>  以此类推，其他两个<code>cluster</code>也可以这样访问，不过是<code>nodeport</code>不一样而已</p>
+<pre><code class="language-bash">❯ kubectl get svc -n database        
+NAME                       TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+kafka-0-external           NodePort       10.103.255.3     &lt;none&gt;          9094:32402/TCP               19h
+kafka-1-external           NodePort       10.106.84.112    &lt;none&gt;          9094:31626/TCP               19h
+kafka-2-external           NodePort       10.100.211.212   &lt;none&gt;          9094:32458/TCP               19h
+</code></pre>
+<p>还可以通过统一的<code>NodePort-svc</code> 将<code>headless</code>暴露至外部</p>
+<p>参考：<a href="https://www.jianshu.com/p/f63a52619fd9">将 headless service 映射到外网 - 简书 (jianshu.com)</a></p>
+<pre><code class="language-bash">❯ kubectl expose svc kafka-headless --name=kafka-external --type=LoadBalancer --port=9094 --target-port=9094 -n database
+
+❯ kubectl get svc -n database  kafka-external
+
+NAME             TYPE           CLUSTER-IP      EXTERNAL-IP     PORT(S)          AGE
+kafka-external   LoadBalancer   10.105.60.175   192.168.1.244   9094:32002/TCP   19h
+</code></pre>
+<p>这样也可以使用<code>192.168.1.3:32002</code></p>
+<h2 id="搭建kafka-ui">搭建kafka-ui</h2>
+<p>文档：<a href="https://github.com/provectus/kafka-ui">provectus/kafka-ui: Open-Source Web UI for Apache Kafka Management (github.com)</a></p>
+<p>先修改一下配置文件，k8s内部的kafka 可以直接使用headless服务地址</p>
+<p><code>kafka-ui-config.yaml</code>:</p>
+<pre><code class="language-yaml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-ui-config
+  namespace: database
+data:
+  config.yml: |-
+    kafka:
+      clusters:
+        - name: k8s
+          bootstrapServers: kafka-headless.database.svc.cluster.local:9092
+    auth:
+      type: disabled
+    management:
+      health:
+        ldap:
+          enabled: false
+</code></pre>
+<p>使用k8s搭建</p>
+<pre><code class="language-bash">kubectl apply -f kafka-ui-config.yaml
+
+helm repo add kafka-ui https://provectus.github.io/kafka-ui
+
+helm install my-kafka-ui -n database --set yamlApplicationConfigConfigMap.name=&quot;kafka-ui-config&quot;,yamlApplicationConfigConfigMap.keyName=&quot;config.yml&quot; kafka-ui/kafka-ui --version 0.4.5
+</code></pre>
 
                 </div>
             </article>
@@ -158,14 +245,14 @@
         
             <div class="next-post">
                 <div class="next gt-c-content-color-first">下一篇</div>
-                <a href="https://blog.marun.run/kotlin-jackson-missing-type-id-property-class/" class="post-title gt-a-link">
-                    kotlin jackson  missing type id property &#39;@class&#39;
+                <a href="https://blog.marun.run/istio-fu-wu-wang-ge-qi-dong-shun-xu/" class="post-title gt-a-link">
+                    Istio 服务网格启动顺序
                 </a>
             </div>
         
 
         
-            <span id="/istio-fu-wu-wang-ge-qi-dong-shun-xu//" class="leancloud_visitors" data-flag-title="Istio 服务网格启动顺序">
+            <span id="/k8s-an-zhuang-kafka-kafka-ui//" class="leancloud_visitors" data-flag-title="k8s安装kafka  kafka-ui ">
                 <em class="post-meta-item-text">阅读量 </em>
                 <i class="leancloud-visitors-count">0</i>
             </span>
