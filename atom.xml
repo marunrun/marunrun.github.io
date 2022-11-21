@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://blog.marun.run</id>
     <title>Marun&apos;s Blog</title>
-    <updated>2022-11-21T09:20:25.342Z</updated>
+    <updated>2022-11-21T10:27:17.956Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://blog.marun.run"/>
     <link rel="self" href="https://blog.marun.run/atom.xml"/>
@@ -10,6 +10,13 @@
     <logo>https://blog.marun.run/images/avatar.png</logo>
     <icon>https://blog.marun.run/favicon.ico</icon>
     <rights>All rights reserved 2022, Marun&apos;s Blog</rights>
+    <entry>
+        <title type="html"><![CDATA[xxl-job sidecar 运行在K8s中]]></title>
+        <id>https://blog.marun.run/xxl-job-sidecar-yun-xing-zai-k8s-zhong/</id>
+        <link href="https://blog.marun.run/xxl-job-sidecar-yun-xing-zai-k8s-zhong/">
+        </link>
+        <updated>2022-11-21T09:22:01.000Z</updated>
+    </entry>
     <entry>
         <title type="html"><![CDATA[k8s安装kafka  kafka-ui ]]></title>
         <id>https://blog.marun.run/k8s-an-zhuang-kafka-kafka-ui/</id>
@@ -99,17 +106,6 @@
         <summary type="html"><![CDATA[<p>部署packagist 搭配gitlab使用</p>
 ]]></summary>
         <content type="html"><![CDATA[<p>部署packagist 搭配gitlab使用</p>
-]]></content>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[gitlab-ci/cd]]></title>
-        <id>https://blog.marun.run/gitlab-cicd/</id>
-        <link href="https://blog.marun.run/gitlab-cicd/">
-        </link>
-        <updated>2021-11-11T02:56:06.000Z</updated>
-        <summary type="html"><![CDATA[<p>简单介绍gitlab-ci/cd的使用</p>
-]]></summary>
-        <content type="html"><![CDATA[<p>简单介绍gitlab-ci/cd的使用</p>
 ]]></content>
     </entry>
 </feed>

@@ -1,0 +1,463 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>xxl-job sidecar 运行在K8s中 | Marun&#39;s Blog</title>
+
+<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1669026432701">
+
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://blog.marun.run/styles/main.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css"> -->
+
+<script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dockerfile.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.15.10/languages/dart.min.js"></script>
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/moment@2.27.0/moment.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"></script> -->
+<!-- DEMO JS -->
+<!--<script src="media/scripts/index.js"></script>-->
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-160187009-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-160187009-1');
+</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
+</head>
+<body>
+<div class="main gt-bg-theme-color-first">
+    <nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="/">
+        <img class="user-avatar" src="/images/avatar.png" alt="头像">
+        <div class="site-name gt-c-content-color-first">
+            Marun&#39;s Blog
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="changeNavbar">
+        <i class="fas fa-bars gt-c-content-color-first" style="font-size: 18px"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="navbar-nav mr-auto" style="text-align: center">
+            
+            <div class="nav-item">
+                
+                <a href="/" class="menu gt-a-link">
+                    首页
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/archives" class="menu gt-a-link">
+                    归档
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/tags" class="menu gt-a-link">
+                    标签
+                </a>
+                
+            </div>
+            
+            <div class="nav-item">
+                
+                <a href="/about" class="menu gt-a-link">
+                    关于
+                </a>
+                
+            </div>
+            
+        </div>
+        <div style="text-align: center">
+            <form id="gridea-search-form" style="position: relative" data-update="1669026432701"
+                action="/search/">
+                <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
+                <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
+            </form>
+        </div>
+    </div>
+</nav>
+<script>
+    /* 移动端导航栏展开/收起切换 */
+    document.getElementById('changeNavbar').onclick = () => {
+        var element = document.getElementById('navbarSupportedContent');
+        if (element.style.display === 'none' || element.style.display === '') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+</script>
+
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    xxl-job sidecar 运行在K8s中
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-11-21 ·
+                    </time>
+                    
+                </div>
+                <div class="post-content">
+                    <h3 id="业务背景">业务背景</h3>
+<p>公司有很多php的定时任务 以<a href="https://kubernetes.io/zh-cn/docs/concepts/workloads/controllers/cron-jobs/">cronjob</a>的方式运行在k8s集群内，大概有100多个，每一个任务运行都会创建一个<a href="https://kubernetes.io/zh-cn/docs/concepts/workloads/controllers/job/">job</a></p>
+<p>使用<code>kubectl get pods</code>可以看到许多已完成的pod， 这些pod 默认不会删除，是会占用资源的</p>
+<blockquote>
+<p>实际上可以通过设置保留完成 Job 数 <code>successfulJobsHistoryLimit: 0</code>    来删除已完成的pod</p>
+</blockquote>
+<p>但还是会有一批定时任务同时创建的问题，例如某个业务 每两分钟运行一个定时任务，每四分钟再运行一个定时任务。一旦同时在更新部署其他业务，会造成资源抢占，（<strong>阿里云集群每个节点只能运行110个pod</strong>）也会造成一定的资源浪费。</p>
+<p>实际上，这两个定时任务可以在同一个pod内执行，并没有必要启动两个pod来运行。</p>
+<h3 id="解决方案">解决方案</h3>
+<p>首先想到的是使用xxl-job 或类似的定时任务调度中心来完成，但php接入xxl-job 又比较麻烦，对历史项目进行改造的成本很高。</p>
+<p>一番思索加上google了一下，看到了阿里云的解决方案<a href="https://help.aliyun.com/document_detail/426921.html">Sidecar方式接入SchedulerX (aliyun.com)</a>，好像很适合目前的项目。</p>
+<p>很nice，再github上找找，选择了golang版本的<a href="https://github.com/xxl-job/xxl-job-executor-go">xxl-job/xxl-job-executor-go: xxl-job 执行器（golang 客户端） (github.com)</a></p>
+<p>golang更简单，打包出来占用内存</p>
+<h3 id="代码">代码</h3>
+<p>执行器代码比较少，可以参考<a href="https://github.com/xxl-job/xxl-job-executor-go/tree/master/example">xxl-job-executor-go/example at master · xxl-job/xxl-job-executor-go (github.com)</a></p>
+<p>这里我只写了一个<code>k8s_exec.go</code></p>
+<pre><code class="language-go">package task
+
+import (
+	&quot;context&quot;
+	&quot;fmt&quot;
+	&quot;github.com/xxl-job/xxl-job-executor-go&quot;
+	v1 &quot;k8s.io/api/core/v1&quot;
+	&quot;k8s.io/client-go/kubernetes&quot;
+	&quot;k8s.io/client-go/kubernetes/scheme&quot;
+	&quot;k8s.io/client-go/rest&quot;
+	&quot;k8s.io/client-go/tools/clientcmd&quot;
+	&quot;k8s.io/client-go/tools/remotecommand&quot;
+	&quot;log&quot;
+	&quot;os&quot;
+	&quot;strconv&quot;
+)
+
+var (
+	client    *kubernetes.Clientset
+	config    *rest.Config
+	err       error
+	namespace string
+	podName   string
+)
+
+func init() {
+
+	// 是否在集群内运行？
+	inCluster, _ := strconv.ParseBool(os.GetEnv(&quot;IN_CLUSTER&quot;))
+
+	if inCluster {
+		// 使用集群内配置
+		config, err = rest.InClusterConfig()
+	} else {
+		// 默认使用本机的~/.kube/conf 配置
+		config, err = clientcmd.BuildConfigFromFlags(&quot;&quot;, clientcmd.RecommendedHomeFile)
+	}
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	client, err = kubernetes.NewForConfig(config)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	namespace = os.Getenv(&quot;NAMESPACE&quot;)
+	podName = os.Getenv(&quot;POD_NAME&quot;)
+}
+
+func K8s_exec(cxt context.Context, param *xxl.RunReq) string {
+	logger := log.New(os.Stdout, fmt.Sprintf(&quot;XXL-AGENT-K8S-EXEC [%d]&quot;, param.LogID), 0)
+
+	logger.Println(&quot;开始执行任务&quot;)
+
+	// 执行命令
+	cmd := []string{
+		&quot;sh&quot;,
+		&quot;-c&quot;,
+		param.ExecutorParams,
+	}
+
+	// 构建请求 通过namespace  podName  containerName 找到对应的业务容器
+	req := client.CoreV1().RESTClient().Post().Resource(&quot;pods&quot;).Name(podName).
+		Namespace(namespace).SubResource(&quot;exec&quot;).Param(&quot;container&quot;, os.Getenv(&quot;CONTAINER_NAME&quot;))
+
+	option := &amp;v1.PodExecOptions{
+		Command: cmd,
+		Stdin:   true,
+		Stdout:  true,
+		Stderr:  true,
+		TTY:     false,
+	}
+
+	req.VersionedParams(
+		option,
+		scheme.ParameterCodec,
+	)
+	exec, err := remotecommand.NewSPDYExecutor(config, &quot;POST&quot;, req.URL())
+
+	if err != nil {
+		logger.Panic(err)
+	}
+
+	err = exec.Stream(remotecommand.StreamOptions{
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+		Tty:    false,
+	})
+
+	if err != nil {
+		logger.Panic(err)
+	}
+
+	logger.Println(&quot;任务执行完毕&quot;)
+	return &quot;executed&quot;
+}
+</code></pre>
+<p>其实就是通过<code>namespace</code> <code>podName</code> <code>containerName</code> 找到对应的业务容器（需要执行命令的容器），通过<code>exec</code>的方式执行对应的命令</p>
+<p>然后在<code>main.go</code>注册一下</p>
+<pre><code class="language-go">...
+	exec.RegTask(&quot;task.panic&quot;, task.Panic)
+...
+</code></pre>
+<h3 id="部署">部署</h3>
+<p>注意这里，需要给<code>ServiceAccount</code> 添加对应的<code>pods/exec</code>权限</p>
+<pre><code class="language-yaml">apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: xxl-job-agent-exec
+rules:
+  - apiGroups:
+      - &quot;&quot;
+    resources:
+      - 'pods/exec'
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: xxl-job-agent-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: xxl-job-agent-exec
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: default
+</code></pre>
+<p>然后弄个项目测试一下</p>
+<pre><code class="language-yaml">kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: xxl-job-test
+  namespace: contract
+  labels:
+    app: xxl-job-test
+    app.auth.matrix.io/id: contract
+    app.kubernetes.io/name: contract
+    app.kubernetes.io/version: v1
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: xxl-job-test
+  template:
+    metadata:
+      labels:
+        app: xxl-job-test
+        app.auth.matrix.io/id: contract
+        app.kubernetes.io/name: contract
+        app.kubernetes.io/version: v1
+        version: v1
+    spec:
+      containers:
+        - name: business-api
+          image: 'yourDockerImage:lastest'
+          ports:
+            - name: http-80
+              containerPort: 80
+              protocol: TCP
+          resources: {}
+          imagePullPolicy: Always
+        - name: xxl-job-agent
+          image: 'xxl-job-agent:test'
+          ports:
+            - name: http
+              containerPort: 9999
+              protocol: TCP
+          env:
+            - name: XXL_JOB_ADDR
+              value: 'http://xxl-job.company.svc.cluster.local:8080/xxl-job-admin'
+            - name: XXL_JOB_NAME
+              value: contract-job
+            - name: CONTAINER_NAME
+              value: business-api
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+</code></pre>
+<p>这里的<code>deploy</code> 中有两个<code>container</code> 其中 <code>business-api</code>是业务容器，<code>xxl-job-agent</code>就是我们的执行器</p>
+<p>这里在执行器里需要配置一些环境变量</p>
+<pre><code class="language-yaml">           - name: XXL_JOB_ADDR  # xxl-job 集群内部地址 按需配置
+              value: 'http://xxl-job.company.svc.cluster.local:8080/xxl-job-admin'
+            - name: XXL_JOB_NAME # 执行器的名称  
+              value: busiess-job
+            - name: CONTAINER_NAME # 业务容器的名称
+              value: business-api
+            - name: NAMESPACE # 命名空间
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: POD_NAME # podName
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+</code></pre>
+<h3 id="配置">配置</h3>
+<h4 id="新增执行器">新增执行器</h4>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/marunrun/xxl-job-k8s-agent/master/img.png" alt="image-20221121175551318" loading="lazy"></figure>
+<p>这里的AppName 就是上面环境变量的<code>XXL_JOB_NAME</code></p>
+<p>如果没啥问题的话，执行器那里就能看到机器地址了</p>
+<h4 id="增加任务">增加任务</h4>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/marunrun/xxl-job-k8s-agent/master/img1.png" alt="image-20221121175702742" loading="lazy"></figure>
+<p>这里运行模式选择<code>BEAN</code></p>
+<p><code>JobHandler</code> 就是上面<code>main.go</code>注册的	<code>k8s.exec</code></p>
+<p>任务参数：需要运行的命令，例如上面的<code>php -v</code>  实际上应该是你需要在业务容器内运行的命令</p>
+<p>手动执行一次，能看到输出就说明没啥问题了</p>
+<figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/marunrun/xxl-job-k8s-agent/master/img_2.png" alt="img_2" loading="lazy"></figure>
+<p>这样只用给需要定时任务的<code>deploy</code>加上<code>agent</code> ，然后再去xxl-job里加上执行器，任务就可以了。这样不会再有多余的pod，每次定时任务都是在业务容器内去执行了。</p>
+<blockquote>
+<p><a href="https://github.com/xxl-job/xxl-job-executor-go">xxl-job/xxl-job-executor-go: xxl-job 执行器（golang 客户端） (github.com)</a></p>
+<p><a href="https://www.xuxueli.com/xxl-job/">分布式任务调度平台XXL-JOB (xuxueli.com)</a></p>
+</blockquote>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/k8s-an-zhuang-kafka-kafka-ui/" class="post-title gt-a-link">
+                    k8s安装kafka  kafka-ui 
+                </a>
+            </div>
+        
+
+        
+            <span id="/xxl-job-sidecar-yun-xing-zai-k8s-zhong//" class="leancloud_visitors" data-flag-title="xxl-job sidecar 运行在K8s中">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
+
+        <div class="site-footer gt-c-content-color-first">
+    <div class="slogan gt-c-content-color-first">day day up</div>
+    <div class="social-container">
+        
+            
+                <a href="https://github.com/marunrun" target="_blank">
+                    <i class="fab fa-github gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+                <a href="https://weibo.com/maruna" target="_blank">
+                    <i class="fab fa-weibo gt-c-content-color-first"></i>
+                </a>
+            
+        
+            
+        
+            
+        
+            
+        
+    </div>
+    <div class="footer-info">
+        <a href="https://beian.miit.gov.cn" rel="noopener" target="_blank">鄂ICP备16003886号-3</a>
+    </div>
+    <div>
+        Theme by <a href="https://imhanjie.com/" target="_blank">imhanjie</a>, Powered by <a
+                href="https://github.com/getgridea/gridea" target="_blank">Gridea | <a href="https://blog.marun.run/atom.xml" target="_blank">RSS</a></a>
+    </div>
+</div>
+
+<script>
+  hljs.highlightAll()
+</script>
+
+    </div>
+</div>
+</body>
+</html>
