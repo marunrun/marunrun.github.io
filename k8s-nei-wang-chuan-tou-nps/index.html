@@ -4,7 +4,7 @@
 <meta name="description" content="" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<title>workflow | Marun&#39;s Blog</title>
+<title>K8s 内网穿透 nps | Marun&#39;s Blog</title>
 
 <link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1669169266917">
 
@@ -37,11 +37,11 @@
 </script>
 
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.css">
 </head>
 <body>
 <div class="main gt-bg-theme-color-first">
-    <div class="main-content">
-        <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg">
     <a class="navbar-brand" href="/">
         <img class="user-avatar" src="/images/avatar.png" alt="头像">
         <div class="site-name gt-c-content-color-first">
@@ -109,56 +109,127 @@
     }
 </script>
 
-        <div class="current-tag-container">
-            <h2 class="title gt-c-content-color-first">
-                #workflow
-            </h2>
-        </div>
-        <div class="post-list-container">
-    <div class="post-inner">
-        
-            <div class="post gt-bg-theme-color-second">
-                <div class="post-left">
-                    <div>
-                        
-                        <a href="https://blog.marun.run/activiti-camunda-hui-qian-huo-qian/">
-                            <span class="post-title gt-c-content-color-first">activiti, camunda, 会签 或签</span>
+    <div class="post-container">
+        <div class="post-detail gt-bg-theme-color-second">
+            <article class="gt-post-content">
+                <h2 class="post-title">
+                    K8s 内网穿透 nps
+                </h2>
+                <div class="post-info">
+                    <time class="post-time gt-c-content-color-first">
+                        · 2022-11-23 ·
+                    </time>
+                    
+                        <a href="https://blog.marun.run/nps/" class="post-tags">
+                            # nps
                         </a>
-                    </div>
-                    <div class="gt-post-content post-abstract gt-c-content-color-second">
-                        会签，或签，依次审批借助于multi-instance
-Multi-Instance | Camunda Cloud Docs
-Activiti User Guide
-
-                    </div>
-                    <div class="post-info">
-                        <time class="post-time gt-c-content-color-first">
-                            发布于 · 2022-03-01 ·
-                        </time>
-                        
-                            <a href="https://blog.marun.run/activiti/" class="post-tag">
-                                # activiti
-                            </a>
-                        
-                            <a href="https://blog.marun.run/camunda/" class="post-tag">
-                                # camunda
-                            </a>
-                        
-                            <a href="https://blog.marun.run/workflow/" class="post-tag">
-                                # workflow
-                            </a>
-                        
-                    </div>
+                    
+                        <a href="https://blog.marun.run/nei-wang-chuan-tou/" class="post-tags">
+                            # 内网穿透
+                        </a>
+                    
+                        <a href="https://blog.marun.run/k8s/" class="post-tags">
+                            # k8s
+                        </a>
+                    
                 </div>
-                
+                <div class="post-content">
+                    <h2 id="背景">背景</h2>
+<p>公司内部机房k8s集群用作测试环境，只能内网访问。但对接某些第三方应用，测试的时候需要公网的回调地址。</p>
+<h2 id="nps-npc">Nps &amp; Npc</h2>
+<p><a href="https://github.com/ehang-io/nps">ehang-io/nps</a></p>
+<p><a href="https://ehang-io.github.io/nps/#/run">启动 (ehang-io.github.io)</a></p>
+<p>内网穿透工具，找一台有公网ip的机器，按照文档把server端(nps)部署一下</p>
+<p>然后dns解析到这台机器上，例如：<code>*.proxy.marun.run</code><br>
+<img src="https://blog.marun.run/post-images/1669169223559.png" alt="" loading="lazy"><br>
+部署好之后，点这个客户端列表 新增，默认配置就ok</p>
+<p>新增之后，点击列表最左边的加号，可以看到客户端命令。</p>
+<hr>
+<p>因为我们需要访问k8s内网服务，所以我们在k8s内部署一套client(npc)</p>
+<p>Dockerfile 我直接用的<a href="https://github.com/ehang-io/nps/blob/master/Dockerfile.npc">nps/Dockerfile.npc  (github.com)</a>的这个，可以根据自己的需要自己打包镜像，然后传到自己的私有镜像仓库</p>
+<p><code>npc-deploy.yaml</code></p>
+<pre><code class="language-yaml">kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: npc
+  namespace: nps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: npc
+  template:
+    metadata:
+      labels:
+        app: npc
+    spec:
+      containers:
+        - name: npc
+          image: 'marunrun/npc:latest'
+          args:
+            - '-server=127.0.0.1:8024'
+            - '-vkey=1234'
+            - '-type=tcp'
+</code></pre>
+<blockquote>
+<p>记得把<code>args</code>里的<code>server</code>和<code>vkey</code>值 换成你自己的。</p>
+</blockquote>
+<hr>
+<p>然后去nps后台，添加一个域名解析<br>
+<img src="https://blog.marun.run/post-images/1669169191072.png" alt="" loading="lazy"></p>
+<p>主机就是你解析到nps服务主机的域名，目标就是k8s内部服务的dns地址，记得加上端口号</p>
+<p>自己访问试试就ok了，其他的配置啥的看看文档就可以了，目前这样的配置已经能解决我的问题了</p>
+
+                </div>
+            </article>
+        </div>
+
+        
+            <div class="next-post">
+                <div class="next gt-c-content-color-first">下一篇</div>
+                <a href="https://blog.marun.run/xxl-job-sidecar-yun-xing-zai-k8s-zhong/" class="post-title gt-a-link">
+                    xxl-job sidecar 运行在K8s中
+                </a>
             </div>
         
-    </div>
-</div>
-        <div class="pagination-container">
-    
-    
-</div>
+
+        
+            <span id="/k8s-nei-wang-chuan-tou-nps//" class="leancloud_visitors" data-flag-title="K8s 内网穿透 nps">
+                <em class="post-meta-item-text">阅读量 </em>
+                <i class="leancloud-visitors-count">0</i>
+            </span>
+        
+
+        
+
+        
+            <script src='https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js'></script>
+
+<style>
+	div#vcomments{
+		width:100%;
+		max-width: 1000px;
+		padding: 2.5%
+	}
+</style>
+
+
+	<div id="vcomments"></div>
+
+<script>
+	new Valine({
+		el: '#vcomments',
+		appId: 'fIXmb4BHOLf0bNxTPvW16YLW-gzGzoHsz',
+		appKey: 'xqG9hKH7igqsal19BmOydrKJ',
+		avatar: 'robohash',
+		pageSize: 5,
+		recordIp: true,
+		placeholder: '可以留下您的足迹～',
+		visitor: true,
+	});
+</script>
+
+        
 
         <div class="site-footer gt-c-content-color-first">
     <div class="slogan gt-c-content-color-first">day day up</div>
