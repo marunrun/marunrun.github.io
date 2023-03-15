@@ -6,7 +6,7 @@
 
 <title>k8s operator 与webhook | Marun&#39;s Blog</title>
 
-<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1678699112957">
+<link rel="shortcut icon" href="https://blog.marun.run/favicon.ico?v=1678847758174">
 
 <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://blog.marun.run/styles/main.css">
@@ -89,7 +89,7 @@
             
         </div>
         <div style="text-align: center">
-            <form id="gridea-search-form" style="position: relative" data-update="1678699112957"
+            <form id="gridea-search-form" style="position: relative" data-update="1678847758174"
                 action="/search/">
                 <input class="search-input" autocomplete="off" spellcheck="false" name="q" placeholder="搜索文章" />
                 <i class="fas fa-search gt-c-content-color-first" style="position: absolute; top: 9px; left: 10px;"></i>
@@ -275,19 +275,172 @@ func (r *PodReconciler) syncClusterRole(ctx context.Context, pod *v1.Pod) error 
 
 </code></pre>
 <p>上面的代码也很简单，监听pods的变动，从pods的annotations中解析xxl-agent/enable注解，并且parse为布尔值，如果注解值是true，自动同步clusterrole。</p>
+<p>笔者的理解是operator有点类似一个监听器，监听某些操作和变动，然后做出相应的调整，来保证服务或者工作负载能完好的运转。有点类似半自动化的k8s运维。</p>
+<p>注意，这里我们不可以在operator中进行边车的注入，因为这个时候的pods已经准备好了，再进行边车注入会提示报错，需要在webhook中进行边车注入。</p>
 <h2 id="编写webhook">编写webhook</h2>
 <p>参考： https://github.com/kubernetes/kubernetes/blob/release-1.21/test/images/agnhost/webhook/main.go</p>
-<pre><code class="language-go">
-func Inject(ar v1.AdmissionReview) *v1.AdmissionResponse {
-	podResource := metav1.GroupVersionResource{Group: &quot;&quot;, Version: &quot;v1&quot;, Resource: &quot;pods&quot;}
-	if ar.Request.Resource != podResource {
-		klog.Errorf(&quot;expect resource to be %s&quot;, podResource)
-		return nil
+<p>webhook 动态准入，有点类似过滤器 / 中间件，在完成某个资源的请求之前通过webhook过滤一遍，可以实现动态调整配置，拒绝某些请求。</p>
+<p>编写一个webhook在pods创建的时候拦截过滤，这个时候pods还没有创建好，所以我们可以注入边车。</p>
+<p>可以创建一个 webhook.yaml</p>
+<pre><code class="language-yaml">apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  labels:
+    app: xxl-agent-injector
+  name: xxl-agent-injector
+webhooks:
+  - admissionReviewVersions:
+      - v1beta1
+    clientConfig:
+      caBundle: ${CA_BUNDLE}
+      service:
+        name: xxl-agent-injector-webhook
+        namespace: matrixio
+        path: /inject
+        port: 443
+    failurePolicy: Ignore
+    matchPolicy: Exact
+    name: xxl-agent-injector.duomai.com
+    reinvocationPolicy: Never
+    rules:
+      - apiGroups:
+          - &quot;&quot;
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+        resources:
+          - pods
+        scope: '*'
+    sideEffects: None
+    timeoutSeconds: 30
+
+
+</code></pre>
+<p>上面就是一个webhook的配置文件，解释一下一些比较关键的配置：</p>
+<ol>
+<li>
+<p><a href="https://kubernetes.io/zh-cn/docs/reference/access-authn-authz/extensible-admission-controllers/#matching-requests-rules">rules 匹配请求-规则</a></p>
+<p>rules可以是多个，每个rule都必须有一个或多个 operations、apiGroups、apiVersions 和 resources 以及资源的 scope</p>
+</li>
+</ol>
+<ul>
+<li>
+<p><code>operations</code> 匹配的操作,<code>CREATE</code>、<code>UPDATE</code>、<code>DELETE</code>、<code>CONNECT</code> 或 <code>*</code></p>
+</li>
+<li>
+<p><code>apiGroups</code> 匹配的API组，<code>“”</code> 是核心（core）组 , <code>&quot;*&quot;</code> 是匹配所有</p>
+</li>
+<li>
+<p><code>resources</code> 是匹配的资源</p>
+<ul>
+<li><code>“*”</code>匹配所有资源，但不包括子资源</li>
+<li><code>&quot;*/*&quot;</code> 匹配所有资源，包括子资源。</li>
+<li><code>&quot;pods/*&quot;</code> 匹配 pod 的所有子资源。</li>
+<li><code>&quot;*/status&quot;</code> 匹配所有 status 子资源。</li>
+</ul>
+</li>
+<li>
+<p><code>scope</code>指定要匹配的范围。有效值为<code>&quot;Cluster&quot;</code>、<code>&quot;Namespaced&quot;</code> 和 <code>&quot;*&quot;</code>。 子资源匹配其父资源的范围。默认值为<code>&quot;*&quot;</code></p>
+</li>
+<li>
+<p><code>&quot;Cluster&quot;</code> 表示只有集群作用域的资源才能匹配此规则（API 对象 Namespace 是集群作用域的）。</p>
+<ul>
+<li><code>&quot;Namespaced&quot;</code> 意味着仅具有名字空间的资源才符合此规则。</li>
+</ul>
+</li>
+<li>
+<p><code>&quot;*&quot;</code> 表示没有作用域限制。</p>
+</li>
+</ul>
+<ol>
+<li><a href="https://kubernetes.io/zh-cn/docs/reference/access-authn-authz/extensible-admission-controllers/#service-reference">clientConfig 服务引用</a></li>
+</ol>
+<p>当前匹配请求之后，请求将转发至某个服务，这个服务可以是内部，也可以是外部。内部服务使用<code>service</code>，外部服务使用<code>url</code></p>
+<ul>
+<li>
+<p><strong>caBundle</strong>   根证书，可以使用<code>export caBundle=$(kubectl get configmap -n kube-system extension-apiserver-authentication -o=jsonpath='{.data.client-ca-file}' | base64 | tr -d '\n')</code> 命令获取k8s集群的根证书</p>
+</li>
+<li>
+<p><strong>service</strong>  集群内部服务, 当选择了内部服务时，<code>namespace</code> 和<code>name</code>是必填的， <code>port</code>默认是<code>443</code>,<code>path</code>默认是<code>/</code>。 注意其中<code>name</code>是serviceName</p>
+</li>
+<li>
+<p><strong>url</strong> 类似这种 https://xxx.xxx:443/inject   url</p>
+</li>
+</ul>
+<p>所以上面那个配置文件中的rule意思就是，匹配所有<code>pods</code>的创建请求，在<code>pods</code>创建之前，请求<code>matrixio</code>命名空间下的<code>xxl-agent-injector-webhook</code> 服务， 请求的端口是<code>443</code>，路径 是<code>/inject</code></p>
+<p>注意：webhook服务必须是tls加密过的，这里的服务端证书可以使用脚本生成  <a href="https://gist.github.com/marunrun/07f02134b2fc678901176d9e01145beb#file-ssl-sh">ssl.sh</a>  在使用脚本的时候注意修改自己的<code>APP</code>和 <code>NAMESPACE</code>,  如果使用本地url调试，可以手动修改 IP 至本机 ip</p>
+<p>当一切都准备好之后，开始编写服务端的代码</p>
+<p><code>main.go</code></p>
+<pre><code class="language-go">	// 创建路由
+	router := mux.NewRouter()
+
+	// 定义 Webhook 处理函数
+	router.HandleFunc(&quot;/inject&quot;, func(writer http.ResponseWriter, request *http.Request) {
+		f := handler.Inject
+
+		server(writer, request, admitHandler{
+			v1beta1: delegateV1beta1AdmitToV1(f),
+			v1:      f,
+		})
+	})
+
+	// 启动 Webhook 服务
+	srv := &amp;http.Server{
+		Addr:    &quot;:8443&quot;,
+		Handler: router,
 	}
 
+	klog.Info(&quot;Webhook server is running...&quot;)
+	if err := srv.ListenAndServeTLS(config.Options.Ssl.CertFile, config.Options.Ssl.KeyFile); err != nil {
+		panic(err)
+	}
+</code></pre>
+<p><code>config.go</code></p>
+<pre><code class="language-go">package config
+
+import (
+   &quot;github.com/spf13/viper&quot;
+)
+
+var Options OptionConfig
+
+func init() {
+   if err := InitConfig(); err != nil {
+      panic(err)
+   }
+}
+func InitConfig() error {
+   v := viper.New()
+   v.SetConfigFile(&quot;config/application.yaml&quot;)
+   if err := v.ReadInConfig(); err != nil {
+      return err
+   }
+   return v.Unmarshal(&amp;Options)
+}
+
+type InjectConfig struct {
+   SideCarImage string `json:&quot;sidecar-image&quot; mapstructure:&quot;sidecar-image&quot; `
+}
+
+type SslConfig struct {
+   CertFile string `json:&quot;cert&quot; mapstructure:&quot;cert&quot;`
+   KeyFile  string `json:&quot;key&quot; mapstructure:&quot;key&quot;`
+}
+
+type OptionConfig struct {
+   Ssl    SslConfig    `json:&quot;ssl&quot; mapstructure:&quot;ssl&quot;`
+   Inject InjectConfig `json:&quot;inject&quot; mapstructure:&quot;inject&quot;`
+}
+</code></pre>
+<p>上面的代码就是，从<code>config/application.yaml</code>中读取边车镜像，证书文件路径，然后启动一个http服务，绑定<code>inject</code>路由。</p>
+<p>然后就是自己的逻辑代码，<code>inject-handler.go</code></p>
+<pre><code class="language-go">
+func Inject(ar v1.AdmissionReview) *v1.AdmissionResponse {
 	raw := ar.Request.Object.Raw
 	pod := corev1.Pod{}
 	deserializer := Codecs.UniversalDeserializer()
+  // parse pods
 	if _, _, err := deserializer.Decode(raw, nil, &amp;pod); err != nil {
 		klog.Error(err)
 		return utils.ToV1AdmissionResponse(err)
@@ -306,13 +459,6 @@ func Inject(ar v1.AdmissionReview) *v1.AdmissionResponse {
 		return nil
 	}
 
-	//filter the same container ,maybe the pod has been injected
-	if res := utils.ArrFirst(pod.Spec.Containers, func(i corev1.Container) bool {
-		return i.Name == constant.SIDE_CAR_CONTAINER_NAME
-	}); res != nil {
-		klog.Infof(&quot;pod %s has injected&quot;, pod.GenerateName)
-		return nil
-	}
 
 	// 解析注解
 	agentOpt, err := parseAnnotation(&amp;pod)
@@ -365,6 +511,7 @@ func parseAnnotation(pod *corev1.Pod) (agentOpt *options.AgentOptions, err error
 	return
 }
 
+// createPatch 
 func createPatch(agentOpt *options.AgentOptions) ([]byte, error) {
 
 	value := corev1.Container{
@@ -405,6 +552,7 @@ func createPatch(agentOpt *options.AgentOptions) ([]byte, error) {
 		},
 	}
 
+  //  add a container to the pods 
 	return json.Marshal([]map[string]interface{}{
 		{
 			&quot;op&quot;:    &quot;add&quot;,
@@ -415,45 +563,11 @@ func createPatch(agentOpt *options.AgentOptions) ([]byte, error) {
 }
 
 </code></pre>
-<p>这里编写webhook的时候请注意，response的allow值一定要是true，不然所有的pods更新都会被拒绝。</p>
+<p>上面这段代码就是从请求中解析出pods， 然后从pods的注解中解析出配置，根据配置来生成 <code>container</code> ，然后生成对应的响应。</p>
+<p>关于响应，请参考 https://kubernetes.io/zh-cn/docs/reference/access-authn-authz/extensible-admission-controllers/#response</p>
+<p>这里编写webhook的时候请注意，response的allow值一定要是true，不然所有的pods更新都会被拒绝。当然 如果你确实有拒绝pods更新的需求，也可以是false</p>
 <p>然后patch 是多维数组 <code>[[&quot;op&quot; : &quot;add&quot;,&quot;path&quot; :&quot;,&quot;value&quot;:&quot;&quot; ],[...] ]</code></p>
 <hr>
-<p>webhook.yaml</p>
-<pre><code class="language-yaml">apiVersion: admissionregistration.k8s.io/v1
-kind: MutatingWebhookConfiguration
-metadata:
-  labels:
-    app: xxl-agent-injector
-  name: xxl-agent-injector
-webhooks:
-  - admissionReviewVersions:
-      - v1beta1
-    clientConfig:
-      caBundle: ${CA_BUNDLE}
-      service:
-        name: xxl-agent-injector-webhook
-        namespace: matrixio
-        path: /inject
-        port: 443
-    failurePolicy: Ignore
-    matchPolicy: Exact
-    name: xxl-agent-injector.duomai.com
-    reinvocationPolicy: Never
-    rules:
-      - apiGroups:
-          - &quot;&quot;
-        apiVersions:
-          - v1
-        operations:
-          - CREATE
-        resources:
-          - pods
-        scope: '*'
-    sideEffects: None
-    timeoutSeconds: 30
-
-
-</code></pre>
 <p>所有的operator，webhook 都建议在本地调试好之后再去集群中部署。</p>
 
                 </div>
